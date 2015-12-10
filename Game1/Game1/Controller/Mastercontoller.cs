@@ -28,6 +28,11 @@ namespace Game1
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
+
+            graphics.PreferredBackBufferWidth = 800;
+            graphics.PreferredBackBufferHeight = 600;
+            graphics.IsFullScreen = false;
+            
         }
 
         
@@ -44,11 +49,16 @@ namespace Game1
            
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
+            menuController = new MenuController();
+            gameController = new GameController();
+
+            
+            
             //Loads Menu Content.
-            menuController.LoadContent(spriteBatch);
+            menuController.LoadContent(spriteBatch, Content, GraphicsDevice.Viewport);
 
             //Loads Game Content.
-            gameController.LoadContent(spriteBatch);
+            gameController.LoadContent(spriteBatch, Content, GraphicsDevice.Viewport);
 
   
         }
@@ -68,6 +78,8 @@ namespace Game1
             switch(CurrentGameState)
             {
                 case Gamestate.Menu:
+                    this.IsMouseVisible = true;
+                    menuController.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
                     break;
 
                 case Gamestate.Playing:
@@ -85,6 +97,7 @@ namespace Game1
             switch (CurrentGameState)
             {
                 case Gamestate.Menu:
+                    menuController.Draw(spriteBatch, (float)gameTime.ElapsedGameTime.TotalSeconds);
                     break;
 
                 case Gamestate.Playing:
