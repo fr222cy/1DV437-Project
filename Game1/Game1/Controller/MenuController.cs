@@ -18,7 +18,8 @@ namespace Game1.Controller
         MenuCamera menuCamera;
         MouseState lastMouseState;
         MouseState currentMouseState;
-
+        bool hasClicked = false;
+        bool hasClickedPlay = false;
         public MenuController()
         {
 
@@ -26,31 +27,33 @@ namespace Game1.Controller
 
         public void LoadContent(SpriteBatch sBatch, ContentManager Content, Viewport port)
         {
+            //Loads Menu Content.
             menuCamera = new MenuCamera(port);
-            
             menuBackground = Content.Load<Texture2D>("GameMenu.png");
             playButton = Content.Load<Texture2D>("playButton.png");
             menuView = new MenuView(menuCamera);
         }
 
-        public void Update(float elapsedSeconds)
+        public bool Update(float elapsedSeconds)
         {
             lastMouseState = currentMouseState;
 
             currentMouseState = Mouse.GetState();
             var mousePosition = new Vector2(currentMouseState.X, currentMouseState.Y);
 
-            menuView.Update(mousePosition,playButton);
+            hasClickedPlay = menuView.Update(mousePosition, playButton, hasClicked);
+           
 
             if (lastMouseState.LeftButton == ButtonState.Released && currentMouseState.LeftButton == ButtonState.Pressed)
             {
-            
-              
-
+                hasClicked = true;
+                // Returns true if the mouse click is within the Playbutton area. 
+                hasClickedPlay = menuView.Update(mousePosition, playButton, hasClicked);
+                hasClicked = false;
             }
 
-           
-            
+
+            return hasClickedPlay;
         }
 
         public void Draw(SpriteBatch sBatch, float elapsedSeconds)

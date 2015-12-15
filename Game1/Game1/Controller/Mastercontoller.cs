@@ -22,6 +22,8 @@ namespace Game1
             Playing,
         }
 
+        bool hasClickedPlay = false;
+
         Gamestate CurrentGameState = Gamestate.Menu;
 
         public Mastercontoller()
@@ -29,17 +31,16 @@ namespace Game1
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
 
-            graphics.PreferredBackBufferWidth = 800;
-            graphics.PreferredBackBufferHeight = 600;
+            graphics.PreferredBackBufferWidth = 1024;
+            graphics.PreferredBackBufferHeight = 768;
             graphics.IsFullScreen = false;
+            graphics.ApplyChanges();
             
         }
 
         
         protected override void Initialize()
         {
-          
-
             base.Initialize();
         }
 
@@ -79,10 +80,16 @@ namespace Game1
             {
                 case Gamestate.Menu:
                     this.IsMouseVisible = true;
-                    menuController.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
+                    hasClickedPlay = menuController.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
+
+                    if(hasClickedPlay)
+                    {
+                        CurrentGameState = Gamestate.Playing;
+                    }
                     break;
 
                 case Gamestate.Playing:
+                    gameController.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
                     break;
             }
 
@@ -93,7 +100,7 @@ namespace Game1
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
-
+            
             switch (CurrentGameState)
             {
                 case Gamestate.Menu:
@@ -101,6 +108,7 @@ namespace Game1
                     break;
 
                 case Gamestate.Playing:
+                    gameController.Draw(spriteBatch, (float)gameTime.ElapsedGameTime.TotalSeconds);
                     break;
             }
 

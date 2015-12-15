@@ -17,33 +17,41 @@ namespace Game1.View
         float buttonScale = 1f;
         float minButtonscale = 1f;
         float maxButtonscale = 1.2f;
-      
+        float buttonModelWidth;
+        float buttonModelHeight;
 
 
         public MenuView(MenuCamera camera)
         {
             this.camera = camera;
            
+            playButtonPos = new Vector2(0.3f, 0.3f);
            
-            playButtonPos = new Vector2(0.4f, 0.4f);
-            
         }
 
-        public void Update(Vector2 mousePosition , Texture2D playButton)
+        public bool Update(Vector2 mousePosition , Texture2D playButton, bool hasClicked)
         {
             this.playButton = playButton;
+            buttonModelWidth = camera.getModelWidth(playButton.Width);
+            buttonModelHeight = camera.getModelHeight(playButton.Height);
+            
+
 
             Vector2 mouseModelPosition = camera.getClickModelCoords(mousePosition);
-            Console.WriteLine(mouseModelPosition.X);
-            
+          
+      
             //TODO: FIX PLAYBUTTON FOR FULLSCREEN
 
-            if (mouseModelPosition.X >= playButtonPos.X - playButton.Width && mouseModelPosition.X < playButtonPos.X + playButton.Width
-            && mouseModelPosition.Y >= playButtonPos.Y - playButton.Height && mouseModelPosition.Y < playButtonPos.Y + playButton.Height)
+            if (playButtonPos.X >= mouseModelPosition.X - buttonModelWidth && playButtonPos.X <=  mouseModelPosition.X + buttonModelWidth
+            && playButtonPos.Y >= mouseModelPosition.Y - buttonModelHeight && playButtonPos.Y <= mouseModelPosition.Y + buttonModelHeight)
             {
                 if(buttonScale < maxButtonscale)
                 {
                     buttonScale += 0.01f;
+                }
+                if(hasClicked)
+                {
+                    return true;
                 }
             }
 
@@ -54,12 +62,11 @@ namespace Game1.View
                     buttonScale -= 0.01f;
                 }
             }
+            return false;
         }
 
         public void Draw(SpriteBatch sBatch, float elapsedSeconds, Texture2D menuBackground)
         {
-        
-
             float scale = camera.getScale((float)menuBackground.Width);
 
             sBatch.Begin();

@@ -41,7 +41,7 @@ namespace Game1.View
         }
 
         public Vector2 getClickModelCoords(Vector2 position)
-        {
+        { 
 
             float logicalX = (position.X / scaleX);
             float logicalY = (position.Y / scaleY);
@@ -53,6 +53,16 @@ namespace Game1.View
         public float getScale(float width)
         {
             return scale / width ;
+        }
+
+        public float getModelWidth(float width)
+        {
+            return width / scaleX ;
+        }
+
+        public float getModelHeight(float height)
+        {
+            return height / scaleY;
         }
 
 
