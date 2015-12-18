@@ -38,7 +38,7 @@ namespace Game1.Model
 
         public void carMovement(float elapsedTime)
         {
-            Console.WriteLine(playerCar.getPosition());
+            //Console.WriteLine(playerCar.getPosition());
             collision(elapsedTime);
 
          
@@ -78,7 +78,8 @@ namespace Game1.Model
                 }
                 else
                 {
-                    playerCar.setPosition(elapsedTime, speed/4, steeringAngle);
+                    playerCar.setPosition(elapsedTime, -speed/4, steeringAngle);
+                    
                 }
           
               
@@ -102,8 +103,18 @@ namespace Game1.Model
 
         public void collision(float elapsedTime)
         {
-        
             
+            if(Math.Floor(playerCar.getPosition().X + hitBox.X) > map.GetLength(1) ||
+               Math.Floor(playerCar.getPosition().X - hitBox.X) < 0 ||
+               Math.Floor(playerCar.getPosition().Y + hitBox.Y) >= map.GetLength(0) ||
+               Math.Floor(playerCar.getPosition().Y - hitBox.Y) <= 0
+            )
+            {
+                carHit = true;
+            }
+
+
+
             foreach(Rectangle tile in collisionTiles)
             {
 
@@ -113,27 +124,24 @@ namespace Game1.Model
                     tile.Y >=  Math.Floor(playerCar.getPosition().Y - hitBox.Y) )
                 {
                     hit++;
-                    Console.WriteLine("hit" + tile.X + " " + tile.Y);
-                   
-                    carHit = true;
-                }
+                    //Console.WriteLine("hit" + tile.X + " " + tile.Y);
 
-                if (carHit)
+                    carHit = true; 
+                }        
+            }
+
+            if(carHit)
+            {
+                hitTimer += 1f * elapsedTime;
+                Console.WriteLine(hitTimer);
+                if(hitTimer > 1)
                 {
-                    elapsedTime = 0;
-
-
-                    if (elapsedTime > 0.01f)
-                    {
-                        carHit = false;
-                        
-                        elapsedTime = 0;
-                    }
+                    speed = 0;
+                    carHit = false;
+                    hitTimer = 0;
                 }
                 
             }
-
-            
 
             
 
