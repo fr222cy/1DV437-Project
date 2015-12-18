@@ -41,6 +41,7 @@
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="CollisionTile.cs" />
     <Compile Include="Controller\GameController.cs" />
     <Compile Include="Controller\Level1.cs" />
     <Compile Include="Controller\Mastercontoller.cs" />

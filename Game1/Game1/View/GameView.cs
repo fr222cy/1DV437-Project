@@ -34,7 +34,14 @@ namespace Game1.View
            float scale = camera.getScale(car.getSize(), player.Width);
 
             sBatch.Begin();
-            sBatch.Draw(player, camera.getViewCoords(car.GetPosition()), player.Bounds, Color.White, car.getRotation(), Vector2.Zero, scale, SpriteEffects.None, 0);
+            sBatch.Draw(
+                player,
+                camera.getViewCoords(car.GetPosition()),
+                player.Bounds, Color.White, car.getRotation(),
+                new Vector2(player.Bounds.Width/2, player.Bounds.Height/2),
+                scale,
+                SpriteEffects.None,
+                0);
             sBatch.End();
         }
 
@@ -42,7 +49,7 @@ namespace Game1.View
         {
 
             float tileSize = camera.getTileSize();
-            float size = 2f;
+            float size = 1f;
             float scale = camera.getScale(size, (float)tileSize);
             tileSize *= scale;
 
@@ -58,11 +65,10 @@ namespace Game1.View
                     Texture2D texture = mapTexture[textureIndex];
                     
                     sBatch.Draw(texture, new Rectangle(x * (int)tileSize, y * (int)tileSize, (int)tileSize, (int)tileSize)  , Color.White);
-                    
-                    
 
-                }  
-            }
+                }   
+            }       
+          
             sBatch.End();
         }
 

@@ -17,9 +17,10 @@ namespace Game1.Controller
         GameView gameView;
         GameCamera camera;
         CarSimulation carSimulation;
+        CollisionTile collisionTile;
+        List<Rectangle> collisionTiles;
         int[,] map;
-        float speed;
-        float steering;
+      
 
         Texture2D player;
 
@@ -32,8 +33,6 @@ namespace Game1.Controller
 
         public void LoadContent(SpriteBatch sBatch, ContentManager Content,Viewport port)
         {
-            
-            
             Texture2D asphaltTile = Content.Load<Texture2D>("AsphaltTile.png");
             Texture2D grassTile = Content.Load<Texture2D>("GrassTile.png");
             Texture2D barrier_B_L = Content.Load<Texture2D>("Track-Barrier-Down-Left.png");
@@ -48,7 +47,7 @@ namespace Game1.Controller
             //Load Level 1.
             Level1 level_1 = new Level1();
             map = level_1.getMap();
-
+            
             mapTexture.Add(grassTile);
             mapTexture.Add(asphaltTile);
             mapTexture.Add(barrier_B_L);
@@ -57,18 +56,17 @@ namespace Game1.Controller
             mapTexture.Add(barrier_T_R);
             mapTexture.Add(asphaltGoal);
 
-            carSimulation = new CarSimulation(map);
-            camera = new GameCamera(port, map);
+
+            collisionTile = new CollisionTile();
+            collisionTiles = collisionTile.getCollisionTiles(map);
+            carSimulation = new CarSimulation(map, collisionTiles);
+            camera = new GameCamera(port, map, player);
             gameView = new GameView(camera, carSimulation);
         }
 
         public void Update(float elapsedTime)
         {
-
-                   
-                carSimulation.carMovement(elapsedTime); 
-
-            
+           carSimulation.carMovement(elapsedTime); 
         }
 
         public void Draw(SpriteBatch sBatch, float elapsedTime)

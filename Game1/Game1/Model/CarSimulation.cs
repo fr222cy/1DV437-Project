@@ -15,12 +15,19 @@ namespace Game1.Model
         float acceleration = 0.5f;
         float steeringAngle;
         float steeringModifier = 0.03f;
+        int hit = 0;
         PlayerCar playerCar;
+        List<Rectangle> collisionTiles;
+        Vector2 hitBox;
         int[,] map;
-        public CarSimulation(int[,] map)
+        bool carHit = false;
+        float hitTimer;
+        public CarSimulation(int[,] map, List<Rectangle> collisionTiles)
         {
+            this.collisionTiles = collisionTiles;
             this.map = map;
             playerCar = new PlayerCar();
+            hitBox = playerCar.getHitBox();
         }
 
 
@@ -31,43 +38,50 @@ namespace Game1.Model
 
         public void carMovement(float elapsedTime)
         {
-          
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Up))
-            {
-                if (speed > maxspeed)
+            Console.WriteLine(playerCar.getPosition());
+            collision(elapsedTime);
+
+         
+                if (Keyboard.GetState().IsKeyDown(Keys.Up))
                 {
-                    speed -= acceleration * elapsedTime;
+                    if (speed > maxspeed)
+                    {
+                        speed -= acceleration * elapsedTime;
+                    }
                 }
-               
-            }
-            else
-            {   
-                if(speed > 0 || speed < 0)
+                else
                 {
-                    speed *= 0.98f;
-                }          
-            }
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Down))
-            {
-                speed += acceleration * elapsedTime;
-            }               
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Right))
-            {
-                steeringAngle += steeringModifier;
-            }
+                    if (speed > 0 || speed < 0)
+                    {
+                        speed *= 0.98f;
+                    }
+                }
+                if (Keyboard.GetState().IsKeyDown(Keys.Down))
+                {
+                    speed += acceleration * elapsedTime;
+                }
+                if (Keyboard.GetState().IsKeyDown(Keys.Right))
+                {
+                    steeringAngle += steeringModifier;
+                }
+
+                if (Keyboard.GetState().IsKeyDown(Keys.Left))
+                {
+                    steeringAngle -= steeringModifier;
+                }
+                
+                
+                if(!carHit)
+                {
+                    playerCar.setPosition(elapsedTime, speed, steeringAngle);
+                    steeringAngle *= 0.8f;
+                }
+                else
+                {
+                    playerCar.setPosition(elapsedTime, speed/4, steeringAngle);
+                }
           
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Left))
-            {
-                steeringAngle -= steeringModifier;
-            }
-
-
-          
-
-            
-            playerCar.setPosition(elapsedTime, speed, steeringAngle);
-
-            steeringAngle *= 0.8f;
+              
             
         }
 
@@ -83,8 +97,47 @@ namespace Game1.Model
 
         public float getSpeed()
         {
-            
             return speed;
+        }
+
+        public void collision(float elapsedTime)
+        {
+        
+            
+            foreach(Rectangle tile in collisionTiles)
+            {
+
+                if (tile.X <=  Math.Floor(playerCar.getPosition().X + hitBox.X) &&
+                    tile.X >=  Math.Floor(playerCar.getPosition().X - hitBox.X) &&
+                    tile.Y <=  Math.Floor(playerCar.getPosition().Y + hitBox.Y) &&
+                    tile.Y >=  Math.Floor(playerCar.getPosition().Y - hitBox.Y) )
+                {
+                    hit++;
+                    Console.WriteLine("hit" + tile.X + " " + tile.Y);
+                   
+                    carHit = true;
+                }
+
+                if (carHit)
+                {
+                    elapsedTime = 0;
+
+
+                    if (elapsedTime > 0.01f)
+                    {
+                        carHit = false;
+                        
+                        elapsedTime = 0;
+                    }
+                }
+                
+            }
+
+            
+
+            
+
+            
         }
     }
 }

@@ -15,14 +15,14 @@ namespace Game1.Model
         Vector2 position;
         float wheelBase;
         float heading;
-        
+        Vector2 hitBox;
+
         public PlayerCar()
         {
-            
-            position = new Vector2(27, 28);
-            size = 1f;
-            wheelBase = 0.5f;
-            
+            position = new Vector2(24, 21);
+            size = 0.5f;
+            wheelBase = 0.25f;
+            hitBox = new Vector2(wheelBase, wheelBase/2);
         }
 
         public float getSize()
@@ -32,7 +32,6 @@ namespace Game1.Model
 
         public Vector2 getPosition()
         {
-            Console.WriteLine(position);
             return position;
         }
 
@@ -54,6 +53,11 @@ namespace Game1.Model
 
             position = (frontWheel + backWheel) / 2;
             heading = (float)Math.Atan2(frontWheel.Y - backWheel.Y, frontWheel.X - backWheel.X);
+        }
+
+        public Vector2 getHitBox()
+        {
+            return hitBox;
         }
 
 
