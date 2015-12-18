@@ -13,9 +13,9 @@ namespace Game1.View
     {
 
         GameCamera camera;
-        CarSimulation car;
+        GameSimulation car;
 
-        public GameView(GameCamera camera, CarSimulation car)
+        public GameView(GameCamera camera, GameSimulation car)
         {
             this.car = car;
             this.camera = camera;
@@ -69,6 +69,14 @@ namespace Game1.View
                 }   
             }       
           
+            sBatch.End();
+        }
+
+        public void drawText(SpriteBatch sBatch, float elapsedTime, SpriteFont lapTime)
+        {
+            
+            sBatch.Begin();
+            sBatch.DrawString(lapTime, "00:00:00",camera.getViewCoords(new Vector2(0,0)), Color.Black);
             sBatch.End();
         }
 

@@ -20,7 +20,7 @@ namespace Game1.Model
         public PlayerCar()
         {
             position = new Vector2(24, 21);
-            size = 0.5f;
+            size = 0.65f;
             wheelBase = 0.25f;
             hitBox = new Vector2(wheelBase, wheelBase/2);
         }

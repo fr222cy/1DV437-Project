@@ -31,8 +31,8 @@ namespace Game1
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
 
-            graphics.PreferredBackBufferWidth = 800;
-            graphics.PreferredBackBufferHeight = 600;
+            graphics.PreferredBackBufferWidth = 1024;
+            graphics.PreferredBackBufferHeight = 768;
             graphics.IsFullScreen = false;
             graphics.ApplyChanges();
             
@@ -47,21 +47,17 @@ namespace Game1
       
         protected override void LoadContent()
         {
-           
+
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
             menuController = new MenuController();
             gameController = new GameController();
-
-            
-            
+       
             //Loads Menu Content.
             menuController.LoadContent(spriteBatch, Content, GraphicsDevice.Viewport);
 
             //Loads Game Content.
             gameController.LoadContent(spriteBatch, Content, GraphicsDevice.Viewport);
-
-  
         }
 
      

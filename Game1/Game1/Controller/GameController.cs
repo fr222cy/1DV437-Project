@@ -16,9 +16,10 @@ namespace Game1.Controller
       
         GameView gameView;
         GameCamera camera;
-        CarSimulation carSimulation;
+        GameSimulation carSimulation;
         CollisionTile collisionTile;
         List<Rectangle> collisionTiles;
+        SpriteFont lapTime;
         int[,] map;
       
 
@@ -26,21 +27,13 @@ namespace Game1.Controller
 
         private List<Texture2D> mapTexture = new List<Texture2D>();
 
-        public GameController()
-        {
-
-        }
-
+       
         public void LoadContent(SpriteBatch sBatch, ContentManager Content,Viewport port)
-        {
-            Texture2D asphaltTile = Content.Load<Texture2D>("AsphaltTile.png");
+        {          
             Texture2D grassTile = Content.Load<Texture2D>("GrassTile.png");
-            Texture2D barrier_B_L = Content.Load<Texture2D>("Track-Barrier-Down-Left.png");
-            Texture2D barrier_B_R = Content.Load<Texture2D>("Track-Barrier-Down-Right.png");
-            Texture2D barrier_T_L = Content.Load<Texture2D>("Track-Barrier-Up-Left.png");
-            Texture2D barrier_T_R = Content.Load<Texture2D>("Track-Barrier-Up-Right.png");
-            Texture2D asphaltGoal = Content.Load<Texture2D>("AsphaltGoal.png");
+
             player = Content.Load<Texture2D>("playerCar.png");
+            lapTime = Content.Load<SpriteFont>("LapTimeFont");
             //Create the TileMap
             //Inspired by http://xnatd.blogspot.se/2009/02/ok-so-first-part-of-our-tower-defence.html
             
@@ -49,17 +42,22 @@ namespace Game1.Controller
             map = level_1.getMap();
             
             mapTexture.Add(grassTile);
-            mapTexture.Add(asphaltTile);
-            mapTexture.Add(barrier_B_L);
-            mapTexture.Add(barrier_B_R);
-            mapTexture.Add(barrier_T_L);
-            mapTexture.Add(barrier_T_R);
-            mapTexture.Add(asphaltGoal);
-
+            mapTexture.Add(Content.Load<Texture2D>("borderUpDown.png"));
+            mapTexture.Add(Content.Load<Texture2D>("borderUp.png"));
+            mapTexture.Add(Content.Load<Texture2D>("borderDown.png"));
+            mapTexture.Add(Content.Load<Texture2D>("borderLeft.png"));
+            mapTexture.Add(Content.Load<Texture2D>("borderRight.png"));
+            mapTexture.Add(Content.Load<Texture2D>("Regular.png"));        
+            mapTexture.Add(Content.Load<Texture2D>("borderLeftTop.png"));
+            mapTexture.Add(Content.Load<Texture2D>("borderRightTop.png"));
+            mapTexture.Add(Content.Load<Texture2D>("borderLeftDown.png"));
+            mapTexture.Add(Content.Load<Texture2D>("borderRightDown.png"));
+            mapTexture.Add(Content.Load<Texture2D>("borderLeftRight.png"));
+            mapTexture.Add(Content.Load<Texture2D>("goal.png"));
 
             collisionTile = new CollisionTile();
             collisionTiles = collisionTile.getCollisionTiles(map);
-            carSimulation = new CarSimulation(map, collisionTiles);
+            carSimulation = new GameSimulation(map, collisionTiles);
             camera = new GameCamera(port, map, player);
             gameView = new GameView(camera, carSimulation);
         }
@@ -73,8 +71,7 @@ namespace Game1.Controller
         {
             gameView.drawMap(sBatch, map, mapTexture);
             gameView.drawPlayer(sBatch, player, elapsedTime);
+            gameView.drawText(sBatch, elapsedTime, lapTime);
         }
-
-       
     }
 }

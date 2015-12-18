@@ -40,9 +40,7 @@ namespace Game1.Controller
 
             currentMouseState = Mouse.GetState();
             var mousePosition = new Vector2(currentMouseState.X, currentMouseState.Y);
-
             hasClickedPlay = menuView.Update(mousePosition, playButton, hasClicked);
-           
 
             if (lastMouseState.LeftButton == ButtonState.Released && currentMouseState.LeftButton == ButtonState.Pressed)
             {
@@ -51,18 +49,12 @@ namespace Game1.Controller
                 hasClickedPlay = menuView.Update(mousePosition, playButton, hasClicked);
                 hasClicked = false;
             }
-
-
             return hasClickedPlay;
         }
 
         public void Draw(SpriteBatch sBatch, float elapsedSeconds)
         {
-
-            
-
-            menuView.Draw(sBatch, elapsedSeconds, menuBackground);
-            
+            menuView.Draw(sBatch, elapsedSeconds, menuBackground);            
         }
     }
 }
