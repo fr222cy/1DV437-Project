@@ -47,5 +47,21 @@ namespace Game1.View
                   return scaleX * size / width; 
               }
 
+              
+              public float getPitWindowScale(float width)
+              {
+                  float pitScale =   port.Width / width;
+
+                  return pitScale;
+              }
+
+              public Vector2 getPitTextPosition(Vector2 position)
+              {
+                  float screenX = (port.Width * position.X);
+                  float screenY = (port.Height * position.Y);
+
+                  return new Vector2(screenX, screenY);
+              }
+
     }
 }
