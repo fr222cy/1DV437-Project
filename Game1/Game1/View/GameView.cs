@@ -74,15 +74,19 @@ namespace Game1.View
 
         public void drawText(SpriteBatch sBatch, float elapsedTime, SpriteFont font)
         {
-            
+            float fontWidth = 25;
+
+
+            float scale = camera.getScale(1, fontWidth);
+
             sBatch.Begin();
             sBatch.DrawString(font, "00:00:00",camera.getViewCoords(new Vector2(0,0)), Color.Black);
-            sBatch.DrawString(font,this.car.getSpeedToKPH(), camera.getViewCoords(new Vector2(0, 23)), Color.Snow);
+            sBatch.DrawString(font,this.car.getSpeedToKPH(), camera.getViewCoords(new Vector2(0, 23)), Color.Snow, 0f, Vector2.Zero, scale, SpriteEffects.None,0);
             sBatch.End();
         }
 
 
-        
+     
 
     }
 }
