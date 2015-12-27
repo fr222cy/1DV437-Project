@@ -24,17 +24,15 @@ namespace Game1
 
         bool hasClickedPlay = false;
 
-        Gamestate CurrentGameState = Gamestate.Playing;
+        Gamestate CurrentGameState = Gamestate.Menu;
 
         public Mastercontoller()
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
-
-            graphics.PreferredBackBufferWidth = 1600;
-            graphics.PreferredBackBufferHeight = 1200;
-            graphics.IsFullScreen = true;
-            graphics.ApplyChanges();
+            graphics.PreferredBackBufferWidth = 1024;
+            graphics.PreferredBackBufferHeight = 768;
+            graphics.IsFullScreen = false;
             
         }
 
@@ -47,10 +45,9 @@ namespace Game1
       
         protected override void LoadContent()
         {
-
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            menuController = new MenuController();
+            menuController = new MenuController(graphics);
             gameController = new GameController();
        
             //Loads Menu Content.
@@ -74,11 +71,9 @@ namespace Game1
             {
                 case Gamestate.Menu:
 
-                    this.IsMouseVisible = true;
+                    //this.IsMouseVisible = true;
                     hasClickedPlay = menuController.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
-
-                 
-
+   
                     if(hasClickedPlay)
                     {
                         CurrentGameState = Gamestate.Playing;
@@ -91,7 +86,6 @@ namespace Game1
                     {
                         CurrentGameState = Gamestate.Menu;
                     }
-
 
                     gameController.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
                     break;

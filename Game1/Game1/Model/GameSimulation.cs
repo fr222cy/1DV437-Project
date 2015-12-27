@@ -10,34 +10,37 @@ namespace Game1.Model
 {
     class GameSimulation
     {
-        Vector2 hitBox;
-        float speed;
-        float maxspeed = -4f;
-        float acceleration = 1f;
-        float steeringAngle;
-        float steeringModifier = 0.030f;
-        float hitTimer;
-        Vector2 startPosition = new Vector2(16.5f, 23.5f);
-        Tiles tiles;
+        //LEVEL
         int[,] map; 
+  
+        //PLAYER VARIABLES
+        float speed;
+        float steeringAngle;
+        float hitTimer;
         bool carHit = false;
-        
+        Vector2 hitBox;
+        Vector2 startPosition = new Vector2(16.5f, 23.5f);
+
+        //OBJECTS
+        Tiles tiles;
+        CarHandling handling;
         PlayerCar playerCar;
+
+        //PIT VARIABLES
+        float timePit = 0;
+        bool pitted = true;
+        bool canPit = false;
         
-        public GameSimulation(int[,] map)
+        public GameSimulation(int[,] map, CarHandling handling)
         {
             this.map = map;
-            playerCar = new PlayerCar(startPosition);
-            hitBox = playerCar.getHitBox();
+            this.handling = handling;
             this.tiles = new Tiles(map);
+            this.playerCar = new PlayerCar(startPosition);
+            this.hitBox = playerCar.getHitBox();
         }
 
-        public void carTuning()
-        {
-            maxspeed = -6f;
-            acceleration = 0.5f;
-            steeringModifier = 0.035f;
-        }
+ 
 
         public void resetGame()
         {
@@ -55,12 +58,12 @@ namespace Game1.Model
          
             collision(elapsedTime);
 
-         
+                
                 if (Keyboard.GetState().IsKeyDown(Keys.Up))
                 {
-                    if (speed > maxspeed)
+                    if (speed > handling.getMaxSpeed())
                     {
-                        speed -= acceleration * elapsedTime;
+                        speed -= handling.getAcceleration() * elapsedTime;
                     }
                 }
                 else
@@ -72,16 +75,18 @@ namespace Game1.Model
                 }
                 if (Keyboard.GetState().IsKeyDown(Keys.Down))
                 {
-                    speed += acceleration * elapsedTime;
+                    speed += handling.getAcceleration() * elapsedTime;
                 }
                 if (Keyboard.GetState().IsKeyDown(Keys.Right))
                 {
-                    steeringAngle += steeringModifier;
+                    steeringAngle += handling.getSteeringModifier();
+                    speed *= 0.994f;
                 }
 
                 if (Keyboard.GetState().IsKeyDown(Keys.Left))
                 {
-                    steeringAngle -= steeringModifier;
+                    steeringAngle -= handling.getSteeringModifier();
+                    speed *= 0.994f;
                 }
 
                 if (Keyboard.GetState().IsKeyDown(Keys.Space))
@@ -98,8 +103,9 @@ namespace Game1.Model
                 else
                 {
                     playerCar.setPosition(elapsedTime, -speed/4, steeringAngle);
-                    
                 }
+
+            
         }
 
         public float getRotation()
@@ -141,17 +147,6 @@ namespace Game1.Model
                 }        
             }
 
-            //Checking for pitstopTile.
-            Rectangle pitStopTile = tiles.getPitTile();
-
-            if(pitStopTile.X <=  Math.Floor(playerCar.getPosition().X + hitBox.X) &&
-            pitStopTile.X >=  Math.Floor(playerCar.getPosition().X - hitBox.X) &&
-            pitStopTile.Y <= Math.Floor(playerCar.getPosition().Y + hitBox.Y) &&
-            pitStopTile.Y >= Math.Floor(playerCar.getPosition().Y - hitBox.Y))
-            {
-                Console.WriteLine("IN PIT");
-            }
-
             if(carHit)
             {
                 hitTimer += 1f * elapsedTime;
@@ -162,8 +157,86 @@ namespace Game1.Model
                     carHit = false;
                     hitTimer = 0;
                 }
-                
             }   
+        }
+
+        public bool isInPit()
+        {
+            //Checking for pitstopTile.
+            Rectangle pitStopTile = tiles.getPitTile();
+            if(canPit)
+            {           
+                if (pitStopTile.X <= Math.Floor(playerCar.getPosition().X + hitBox.X) &&
+                pitStopTile.X >= Math.Floor(playerCar.getPosition().X - hitBox.X) &&
+                pitStopTile.Y <= Math.Floor(playerCar.getPosition().Y + hitBox.Y) &&
+                pitStopTile.Y >= Math.Floor(playerCar.getPosition().Y - hitBox.Y))
+                {
+                    pitted = true;
+                }
+                else
+                {
+                    pitted = false;
+                }
+            }
+            return pitted;
+        }
+
+        public void pitTimer(float elapsedTime)
+        {
+            timePit += elapsedTime;
+
+            if(timePit > 10)
+            {
+                canPit = true;
+                timePit = 0;
+            }
+        }
+
+        public void depo()
+        {
+            //Front Spoiler
+            if (Keyboard.GetState().IsKeyDown(Keys.W))
+            {
+               
+                handling.setAcceleration(0.002f);
+            }
+            if (Keyboard.GetState().IsKeyDown(Keys.Q))
+            {
+                handling.setAcceleration(-0.002f);
+              
+            }
+            //Engine Limiter
+            if (Keyboard.GetState().IsKeyDown(Keys.S))
+            {
+                handling.setMaxSpeed(0.001f);
+            }
+            if (Keyboard.GetState().IsKeyDown(Keys.A))
+            {    
+                handling.setMaxSpeed(-0.001f);
+            }    
+            //Turn Radius
+            if (Keyboard.GetState().IsKeyDown(Keys.Z))
+            {
+                handling.setSteeringModifier(-0.00001f);
+            }
+            if (Keyboard.GetState().IsKeyDown(Keys.X))
+            {
+                handling.setSteeringModifier(0.00001f);
+            }
+            //Reset Values.
+            if (Keyboard.GetState().IsKeyDown(Keys.R))
+            {
+                handling.reset();
+            }
+
+            //Go to Track
+            if (Keyboard.GetState().IsKeyDown(Keys.Enter))
+            {
+                pitted = false;
+                canPit = false;
+            }
+
+
         }
     }
 }

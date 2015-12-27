@@ -41,6 +41,7 @@
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Model\CarHandling.cs" />
     <Compile Include="Model\CollisionTile.cs" />
     <Compile Include="Controller\GameController.cs" />
     <Compile Include="Controller\Level1.cs" />
@@ -54,6 +55,7 @@
     <Compile Include="View\GameView.cs" />
     <Compile Include="View\MenuCamera.cs" />
     <Compile Include="View\MenuView.cs" />
+    <Compile Include="View\PitView.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="MonoGame.Framework">
@@ -63,6 +65,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Content\1024x768.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\1280x960.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\1600x1200.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\800x600.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Content\borderDown.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -93,6 +107,12 @@
     <Content Include="Content\borderUpDown.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Content\cursor.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Fullscreen.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Content\GameMenu.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -120,7 +140,9 @@
     <Content Include="Content\stand.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\pitBackground.png" />
+    <Content Include="Content\pitBackground.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Icon.ico" />
   </ItemGroup>
   <ItemGroup>
