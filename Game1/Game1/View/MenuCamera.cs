@@ -45,7 +45,7 @@ namespace Game1.View
 
             float logicalX = (position.X / scaleX);
             float logicalY = (position.Y / scaleY);
-
+           
             return new Vector2(logicalX, logicalY);
         }
 
