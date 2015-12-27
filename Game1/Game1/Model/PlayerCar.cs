@@ -17,9 +17,9 @@ namespace Game1.Model
         float heading;
         Vector2 hitBox;
 
-        public PlayerCar()
+        public PlayerCar(Vector2 startPosition)
         {
-            position = new Vector2(24, 21);
+            position = startPosition;
             size = 0.65f;
             wheelBase = 0.25f;
             hitBox = new Vector2(wheelBase, wheelBase/2);
@@ -58,6 +58,11 @@ namespace Game1.Model
         public Vector2 getHitBox()
         {
             return hitBox;
+        }
+
+        public void resetPosition(Vector2 startposition)
+        {
+            position = startposition;
         }
 
 

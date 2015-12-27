@@ -10,24 +10,38 @@ namespace Game1.Model
 {
     class GameSimulation
     {
+        Vector2 hitBox;
         float speed;
         float maxspeed = -4f;
-        float acceleration = 0.5f;
+        float acceleration = 1f;
         float steeringAngle;
-        float steeringModifier = 0.04f;
-        int hit = 0;
-        PlayerCar playerCar;
-        List<Rectangle> collisionTiles;
-        Vector2 hitBox;
-        int[,] map;
-        bool carHit = false;
+        float steeringModifier = 0.030f;
         float hitTimer;
-        public GameSimulation(int[,] map, List<Rectangle> collisionTiles)
+        Vector2 startPosition = new Vector2(16.5f, 23.5f);
+        Tiles tiles;
+        int[,] map; 
+        bool carHit = false;
+        
+        PlayerCar playerCar;
+        
+        public GameSimulation(int[,] map)
         {
-            this.collisionTiles = collisionTiles;
             this.map = map;
-            playerCar = new PlayerCar();
+            playerCar = new PlayerCar(startPosition);
             hitBox = playerCar.getHitBox();
+            this.tiles = new Tiles(map);
+        }
+
+        public void carTuning()
+        {
+            maxspeed = -6f;
+            acceleration = 0.5f;
+            steeringModifier = 0.035f;
+        }
+
+        public void resetGame()
+        {
+            playerCar.resetPosition(startPosition);
         }
 
 
@@ -38,7 +52,7 @@ namespace Game1.Model
 
         public void carMovement(float elapsedTime)
         {
-            //Console.WriteLine(playerCar.getPosition());
+         
             collision(elapsedTime);
 
          
@@ -51,9 +65,9 @@ namespace Game1.Model
                 }
                 else
                 {
-                    if (speed > 0 )
+                    if (speed < 0 )
                     {
-                        speed *= 0.98f;
+                        speed *= 0.999f;
                     }
                 }
                 if (Keyboard.GetState().IsKeyDown(Keys.Down))
@@ -69,6 +83,11 @@ namespace Game1.Model
                 {
                     steeringAngle -= steeringModifier;
                 }
+
+                if (Keyboard.GetState().IsKeyDown(Keys.Space))
+                {
+                    speed *= 0.92f;
+                }
                 
                 
                 if(!carHit)
@@ -81,9 +100,6 @@ namespace Game1.Model
                     playerCar.setPosition(elapsedTime, -speed/4, steeringAngle);
                     
                 }
-          
-              
-            
         }
 
         public float getRotation()
@@ -96,14 +112,14 @@ namespace Game1.Model
             return playerCar.getSize();
         }
 
-        public float getSpeed()
+        public string getSpeedToKPH()
         {
-            return speed;
+            return String.Format("{0:0}KPH", -speed * 50);
         }
 
         public void collision(float elapsedTime)
         {
-            
+            //Checking for Level Bounds.
             if(Math.Floor(playerCar.getPosition().X + hitBox.X) > map.GetLength(1) ||
                Math.Floor(playerCar.getPosition().X - hitBox.X) < 0 ||
                Math.Floor(playerCar.getPosition().Y + hitBox.Y) >= map.GetLength(0) ||
@@ -113,21 +129,27 @@ namespace Game1.Model
                 carHit = true;
             }
 
-
-
-            foreach(Rectangle tile in collisionTiles)
+            //Checking for collisionTiles.
+            foreach(Rectangle tile in tiles.getCollisionTiles())
             {
-
                 if (tile.X <=  Math.Floor(playerCar.getPosition().X + hitBox.X) &&
-                    tile.X >=  Math.Floor(playerCar.getPosition().X - hitBox.X) &&
-                    tile.Y <=  Math.Floor(playerCar.getPosition().Y + hitBox.Y) &&
-                    tile.Y >=  Math.Floor(playerCar.getPosition().Y - hitBox.Y) )
+                tile.X >=  Math.Floor(playerCar.getPosition().X - hitBox.X) &&
+                tile.Y <=  Math.Floor(playerCar.getPosition().Y + hitBox.Y) &&
+                tile.Y >=  Math.Floor(playerCar.getPosition().Y - hitBox.Y) )
                 {
-                    hit++;
-                    //Console.WriteLine("hit" + tile.X + " " + tile.Y);
-
                     carHit = true; 
                 }        
+            }
+
+            //Checking for pitstopTile.
+            Rectangle pitStopTile = tiles.getPitTile();
+
+            if(pitStopTile.X <=  Math.Floor(playerCar.getPosition().X + hitBox.X) &&
+            pitStopTile.X >=  Math.Floor(playerCar.getPosition().X - hitBox.X) &&
+            pitStopTile.Y <= Math.Floor(playerCar.getPosition().Y + hitBox.Y) &&
+            pitStopTile.Y >= Math.Floor(playerCar.getPosition().Y - hitBox.Y))
+            {
+                Console.WriteLine("IN PIT");
             }
 
             if(carHit)
@@ -141,11 +163,7 @@ namespace Game1.Model
                     hitTimer = 0;
                 }
                 
-            }
-
-            
-
-            
+            }   
         }
     }
 }

@@ -7,14 +7,14 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 namespace Game1
 {
-    class CollisionTile
+    class Tiles
     {
+        Rectangle collisionTile;
+        List<Rectangle> collisionTiles = new List<Rectangle>();
+        Rectangle pitStopTile;
 
-        public List<Rectangle> getCollisionTiles(int[,] map)
+        public Tiles(int[,] map)
         {
-            Rectangle collisionTile;
-            List<Rectangle> collisionTiles = new List<Rectangle>();
-            
             for (int x = 0; x < map.GetLength(1); x++)
             {
                 for (int y = 0; y < map.GetLength(0); y++)
@@ -25,16 +25,31 @@ namespace Game1
 
                     int tileNumber = mapIndex;
 
-                    // Collide with number 0.
-                    if (tileNumber == 0)
+                    // Collide with number 0 and 13.
+                    if (tileNumber == 0 || tileNumber == 13)
                     {
                         collisionTile = new Rectangle(x, y, 1, 1);
                         collisionTiles.Add(collisionTile);
                     }
+                    //PITSTOPTILE HAS INDEX 15.
+                    if(tileNumber == 15)
+                    {
+                        pitStopTile = new Rectangle(x, y, 1, 1);
+                    }
                 }
             }
-            
+        }
+
+
+      
+        public List<Rectangle> getCollisionTiles()
+        {   
             return collisionTiles;
+        }
+
+        public Rectangle getPitTile()
+        {
+            return pitStopTile;
         }
 
     }

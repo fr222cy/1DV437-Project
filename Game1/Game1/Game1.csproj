@@ -41,7 +41,7 @@
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="CollisionTile.cs" />
+    <Compile Include="Model\CollisionTile.cs" />
     <Compile Include="Controller\GameController.cs" />
     <Compile Include="Controller\Level1.cs" />
     <Compile Include="Controller\Mastercontoller.cs" />
@@ -102,6 +102,12 @@
     <Content Include="Content\GrassTile.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Content\PitlaneArrow.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\PitlaneSTOP.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Content\playButton.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -111,6 +117,10 @@
     <Content Include="Content\Regular.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Content\stand.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\pitBackground.png" />
     <Content Include="Icon.ico" />
   </ItemGroup>
   <ItemGroup>

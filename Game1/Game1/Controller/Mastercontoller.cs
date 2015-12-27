@@ -24,16 +24,16 @@ namespace Game1
 
         bool hasClickedPlay = false;
 
-        Gamestate CurrentGameState = Gamestate.Menu;
+        Gamestate CurrentGameState = Gamestate.Playing;
 
         public Mastercontoller()
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
 
-            graphics.PreferredBackBufferWidth = 1024;
-            graphics.PreferredBackBufferHeight = 768;
-            graphics.IsFullScreen = false;
+            graphics.PreferredBackBufferWidth = 1600;
+            graphics.PreferredBackBufferHeight = 1200;
+            graphics.IsFullScreen = true;
             graphics.ApplyChanges();
             
         }
@@ -69,14 +69,15 @@ namespace Game1
      
         protected override void Update(GameTime gameTime)
         {
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
-                Exit();
-
+           
             switch(CurrentGameState)
             {
                 case Gamestate.Menu:
+
                     this.IsMouseVisible = true;
                     hasClickedPlay = menuController.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
+
+                 
 
                     if(hasClickedPlay)
                     {
@@ -85,6 +86,13 @@ namespace Game1
                     break;
 
                 case Gamestate.Playing:
+
+                    if (Keyboard.GetState().IsKeyDown(Keys.Escape))
+                    {
+                        CurrentGameState = Gamestate.Menu;
+                    }
+
+
                     gameController.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
                     break;
             }

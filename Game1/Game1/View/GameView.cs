@@ -72,11 +72,12 @@ namespace Game1.View
             sBatch.End();
         }
 
-        public void drawText(SpriteBatch sBatch, float elapsedTime, SpriteFont lapTime)
+        public void drawText(SpriteBatch sBatch, float elapsedTime, SpriteFont font)
         {
             
             sBatch.Begin();
-            sBatch.DrawString(lapTime, "00:00:00",camera.getViewCoords(new Vector2(0,0)), Color.Black);
+            sBatch.DrawString(font, "00:00:00",camera.getViewCoords(new Vector2(0,0)), Color.Black);
+            sBatch.DrawString(font,this.car.getSpeedToKPH(), camera.getViewCoords(new Vector2(0, 23)), Color.Snow);
             sBatch.End();
         }
 
