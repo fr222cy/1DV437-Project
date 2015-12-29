@@ -44,8 +44,8 @@ namespace Game1.Controller
             //Inspired by http://xnatd.blogspot.se/2009/02/ok-so-first-part-of-our-tower-defence.html
             
             //Load Level 1.
-            Level1 level_1 = new Level1();
-            map = level_1.getMap();
+            Levels level = new Levels();
+            map = level.getLevel1();
             
             mapTexture.Add(grassTile);
             mapTexture.Add(Content.Load<Texture2D>("borderUpDown.png"));
@@ -63,7 +63,9 @@ namespace Game1.Controller
             mapTexture.Add(Content.Load<Texture2D>("stand.png"));
             mapTexture.Add(Content.Load<Texture2D>("PitlaneArrow.png"));
             mapTexture.Add(Content.Load<Texture2D>("PitlaneStop.png"));
+            mapTexture.Add(Content.Load<Texture2D>("checkPoint.png"));
 
+           
             carHandling = new CarHandling();
             gameSimulation = new GameSimulation(map, carHandling);
             camera = new GameCamera(port, map, player);
@@ -73,6 +75,9 @@ namespace Game1.Controller
 
         public void Update(float elapsedTime)
         {
+
+           
+
             //Check if player is in the pitlane.
             if(gameSimulation.isInPit())
             {
@@ -83,11 +88,13 @@ namespace Game1.Controller
                 CurrentPlayerState = PlayerState.OnTrack;
             }
 
-
+           
+           
             switch(CurrentPlayerState)
             {
                 case PlayerState.OnTrack:
-                 gameSimulation.pitTimer(elapsedTime);
+                gameSimulation.updateLap(elapsedTime);
+                gameSimulation.pitTimer(elapsedTime);
                 gameSimulation.carMovement(elapsedTime);
                 break;
 
@@ -97,6 +104,7 @@ namespace Game1.Controller
                 break;
             }  
         }
+
 
         public void Draw(SpriteBatch sBatch, float elapsedTime)
         {

@@ -20,11 +20,15 @@ namespace Game1.Model
         bool carHit = false;
         Vector2 hitBox;
         Vector2 startPosition = new Vector2(16.5f, 23.5f);
-
+        bool playerIsOnLap = false;
+        bool playerIsPastCheckPoint = false;
+        float bestLap = 100.00f;
         //OBJECTS
         Tiles tiles;
         CarHandling handling;
         PlayerCar playerCar;
+        LapTimer lapTimer;
+        List<LapTimer> laps = new List<LapTimer>();
 
         //PIT VARIABLES
         float timePit = 0;
@@ -147,10 +151,26 @@ namespace Game1.Model
                 }        
             }
 
+            //If the player is on a goal tile, start a new laptime
+            foreach (Rectangle tile in tiles.getGoalTiles())
+            {
+                if (tile.X <= Math.Floor(playerCar.getPosition().X + hitBox.X) &&
+                tile.X >= Math.Floor(playerCar.getPosition().X - hitBox.X) &&
+                tile.Y <= Math.Floor(playerCar.getPosition().Y + hitBox.Y) &&
+                tile.Y >= Math.Floor(playerCar.getPosition().Y - hitBox.Y))
+                {
+                    if (!playerIsOnLap)
+                    {
+                        playerIsOnLap = true;
+                    }
+
+                }
+            }
+
             if(carHit)
             {
                 hitTimer += 1f * elapsedTime;
-                Console.WriteLine(hitTimer);
+                
                 if(hitTimer > 1)
                 {
                     speed = 0;
@@ -181,10 +201,107 @@ namespace Game1.Model
             return pitted;
         }
 
+        public void updateLap(float elapsedTime)
+        {
+            //If the player is on a goal tile, start a new laptime
+            foreach (Rectangle tile in tiles.getGoalTiles())
+            {
+                if (tile.X <= Math.Floor(playerCar.getPosition().X + hitBox.X) &&
+                tile.X >= Math.Floor(playerCar.getPosition().X - hitBox.X) &&
+                tile.Y <= Math.Floor(playerCar.getPosition().Y + hitBox.Y) &&
+                tile.Y >= Math.Floor(playerCar.getPosition().Y - hitBox.Y))
+                {
+                    if (!playerIsOnLap || playerIsPastCheckPoint == true)
+                    {
+                        laps.Add(new LapTimer());
+                        if(laps.Count >= 2)
+                        {
+                            laps[laps.Count - 2].lapCompleted();
+                        }
+                        
+                        playerIsOnLap = true;
+                        playerIsPastCheckPoint = false;
+                        setBestLap();
+                    }
+
+                }
+            }
+
+            Rectangle checkPointTile = tiles.getCheckPointTile();
+
+            if (checkPointTile.X <= Math.Floor(playerCar.getPosition().X + hitBox.X) &&
+            checkPointTile.X >= Math.Floor(playerCar.getPosition().X - hitBox.X) &&
+            checkPointTile.Y <= Math.Floor(playerCar.getPosition().Y + hitBox.Y) &&
+            checkPointTile.Y >= Math.Floor(playerCar.getPosition().Y - hitBox.Y))
+            {
+                playerIsPastCheckPoint = true;
+            }
+
+            if(playerIsOnLap)
+            {
+                lapTimer = laps[laps.Count - 1];
+                lapTimer.update(elapsedTime);
+            } 
+        }
+
+        public string getLapTime()
+        {
+            if (playerIsOnLap)
+            {
+                return String.Format("Laptime: {0:0.00}",lapTimer.getLapTime());
+            }
+
+            else
+            {
+                return String.Format("Laptime: 0.00");
+            }
+        }
+
+        public void setBestLap()
+        {
+            bestLap = 1000;
+                foreach(LapTimer lap in laps)
+                {
+                    Console.WriteLine("looping laps...");
+                    if(bestLap > lap.getLapTime() )
+                    {
+                        Console.WriteLine("New bestlap");
+
+                        
+                        //just to avoid cheating.
+                        if(lap.getLapTime() > 10.0f)
+                        {
+                            bestLap = lap.getLapTime();
+                        }
+                        
+                        
+                        Console.WriteLine(bestLap);
+                    }
+                }
+                
+            }
+           
+        public string getBestLapTime()
+        {
+            if(playerIsOnLap)
+            {
+                //Ugly hack, otherwise it will print out 1000 on the first lap. 
+                if(bestLap == 1000)
+                {
+                    return String.Format("Best Lap: 0.00");
+                }
+                return String.Format("Best Lap: {0:0.00}", bestLap);
+            }
+            else
+            {
+                return String.Format("Best Lap: 0.00");
+            }
+        }
+
         public void pitTimer(float elapsedTime)
         {
             timePit += elapsedTime;
-
+            //Cant pit for 10 seconds.
             if(timePit > 10)
             {
                 canPit = true;
@@ -197,13 +314,11 @@ namespace Game1.Model
             //Front Spoiler
             if (Keyboard.GetState().IsKeyDown(Keys.W))
             {
-               
                 handling.setAcceleration(0.002f);
             }
             if (Keyboard.GetState().IsKeyDown(Keys.Q))
             {
                 handling.setAcceleration(-0.002f);
-              
             }
             //Engine Limiter
             if (Keyboard.GetState().IsKeyDown(Keys.S))
@@ -235,8 +350,6 @@ namespace Game1.Model
                 pitted = false;
                 canPit = false;
             }
-
-
         }
     }
 }
