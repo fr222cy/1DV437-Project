@@ -9,10 +9,11 @@ namespace Game1
 {
     class Tiles
     {
-        Rectangle collisionTile;
+        
         List<Rectangle> collisionTiles = new List<Rectangle>();
         Rectangle pitStopTile;
-
+        List<Rectangle> goalTiles = new List<Rectangle>();
+        Rectangle checkPointTile;
         public Tiles(int[,] map)
         {
             for (int x = 0; x < map.GetLength(1); x++)
@@ -28,7 +29,7 @@ namespace Game1
                     // Collide with number 0 and 13.
                     if (tileNumber == 0 || tileNumber == 13)
                     {
-                        collisionTile = new Rectangle(x, y, 1, 1);
+                        Rectangle collisionTile = new Rectangle(x, y, 1, 1);
                         collisionTiles.Add(collisionTile);
                     }
                     //PITSTOPTILE HAS INDEX 15.
@@ -36,11 +37,23 @@ namespace Game1
                     {
                         pitStopTile = new Rectangle(x, y, 1, 1);
                     }
+                    //GOALTILE 
+
+                    if(tileNumber == 12)
+                    {
+                        Rectangle goalTile = new Rectangle(x, y, 1, 1);
+                        goalTiles.Add(goalTile);
+                    }
+
+                    // Checkpoint
+                    if(tileNumber == 16)
+                    {
+                        checkPointTile = new Rectangle(x, y, 1, 1);
+                    }
+
                 }
             }
         }
-
-
       
         public List<Rectangle> getCollisionTiles()
         {   
@@ -50,6 +63,16 @@ namespace Game1
         public Rectangle getPitTile()
         {
             return pitStopTile;
+        }
+
+        public List<Rectangle> getGoalTiles()
+        {
+            return goalTiles;
+        }
+
+        public Rectangle getCheckPointTile()
+        {
+            return checkPointTile;
         }
 
     }

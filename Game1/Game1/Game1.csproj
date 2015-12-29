@@ -44,10 +44,11 @@
     <Compile Include="Model\CarHandling.cs" />
     <Compile Include="Model\CollisionTile.cs" />
     <Compile Include="Controller\GameController.cs" />
-    <Compile Include="Controller\Level1.cs" />
+    <Compile Include="Controller\Levels.cs" />
     <Compile Include="Controller\Mastercontoller.cs" />
     <Compile Include="Controller\MenuController.cs" />
     <Compile Include="Model\GameSimulation.cs" />
+    <Compile Include="Model\LapTimer.cs" />
     <Compile Include="Model\PlayerCar.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -105,6 +106,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\borderUpDown.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\checkPoint.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\cursor.png">

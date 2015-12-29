@@ -18,12 +18,9 @@ namespace Game1.Model
         const float maxSteering = 0.04f;
         const float minSteering = 0.02f;
         float steeringModifier = 0.030f;
-        float playerSteering ;
 
-        public CarHandling()
-        {
 
-        }
+      
 
         public float getMaxSpeed()
         {
