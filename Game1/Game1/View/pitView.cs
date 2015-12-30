@@ -27,15 +27,15 @@ namespace Game1.View
             acceleration = String.Format("Acceleration: {0:0.00}",handling.getAcceleration());
             steering = String.Format("Steering Modifier: {0:0.0000}", handling.getSteeringModifier());
         }
-
-      
-        public void draw(SpriteBatch sBatch, Texture2D background, SpriteFont font)
+              
+        public void draw(SpriteBatch sBatch, Texture2D background, SpriteFont font, float timeToBeat)
         {
 
             float pitScale = camera.getPitWindowScale(background.Width);
             float textScale = camera.getPitWindowScale(background.Width);
             sBatch.Begin();
             sBatch.Draw(background, Vector2.Zero, background.Bounds, Color.White, 0f, Vector2.Zero, pitScale, SpriteEffects.None, 0);
+            sBatch.DrawString(font, timeToBeat.ToString()+".00", camera.getPitTextPosition(new Vector2(0.125f, 0.135f)), Color.Black, 0f, Vector2.Zero, textScale, SpriteEffects.None, 0);
             sBatch.DrawString(font, maxspeed, camera.getPitTextPosition(new Vector2(0.5f, 0.33f)), Color.Black, 0f, Vector2.Zero, textScale, SpriteEffects.None, 0);
             sBatch.DrawString(font, acceleration, camera.getPitTextPosition(new Vector2(0.5f, 0.35f)), Color.Black, 0f, Vector2.Zero, textScale, SpriteEffects.None, 0);
             sBatch.DrawString(font, steering, camera.getPitTextPosition(new Vector2(0.5f, 0.37f)), Color.Black, 0f, Vector2.Zero, textScale, SpriteEffects.None, 0);

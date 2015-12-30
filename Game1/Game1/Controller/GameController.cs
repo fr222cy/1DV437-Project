@@ -21,6 +21,7 @@ namespace Game1.Controller
         SpriteFont font;     
         Texture2D player;
         Texture2D pitBackground;
+        float timeToBeat;
         private List<Texture2D> mapTexture = new List<Texture2D>();
 
         PlayerState CurrentPlayerState = PlayerState.InPit;
@@ -65,12 +66,14 @@ namespace Game1.Controller
             mapTexture.Add(Content.Load<Texture2D>("PitlaneStop.png"));
             mapTexture.Add(Content.Load<Texture2D>("checkPoint.png"));
 
-           
+            timeToBeat = level.getLevel1Time();
+
             carHandling = new CarHandling();
-            gameSimulation = new GameSimulation(map, carHandling);
+            gameSimulation = new GameSimulation(map, carHandling, timeToBeat);
             camera = new GameCamera(port, map, player);
             pitView = new PitView(camera);
             gameView = new GameView(camera, gameSimulation);
+            
         }
 
         public void Update(float elapsedTime)
@@ -90,12 +93,19 @@ namespace Game1.Controller
 
            
            
+           
             switch(CurrentPlayerState)
             {
                 case PlayerState.OnTrack:
                 gameSimulation.updateLap(elapsedTime);
                 gameSimulation.pitTimer(elapsedTime);
                 gameSimulation.carMovement(elapsedTime);
+
+                if (gameSimulation.isPlayerWinner())
+                {
+                    Console.WriteLine("PLAYER WON!");
+                }
+
                 break;
 
                 case PlayerState.InPit:
@@ -117,7 +127,7 @@ namespace Game1.Controller
                 break;
 
                 case PlayerState.InPit:
-                pitView.draw(sBatch, pitBackground, font);
+                pitView.draw(sBatch, pitBackground, font, timeToBeat);
                 break;
             }
         }

@@ -17,12 +17,14 @@ namespace Game1.Model
         float speed;
         float steeringAngle;
         float hitTimer;
+        float timeToBeat;
         bool carHit = false;
         Vector2 hitBox;
         Vector2 startPosition = new Vector2(16.5f, 23.5f);
         bool playerIsOnLap = false;
         bool playerIsPastCheckPoint = false;
         float bestLap = 100.00f;
+        bool playerWon = false;
         //OBJECTS
         Tiles tiles;
         CarHandling handling;
@@ -35,13 +37,14 @@ namespace Game1.Model
         bool pitted = true;
         bool canPit = false;
         
-        public GameSimulation(int[,] map, CarHandling handling)
+        public GameSimulation(int[,] map, CarHandling handling, float timeToBeat)
         {
             this.map = map;
             this.handling = handling;
             this.tiles = new Tiles(map);
             this.playerCar = new PlayerCar(startPosition);
             this.hitBox = playerCar.getHitBox();
+            this.timeToBeat = timeToBeat;
         }
 
  
@@ -222,6 +225,8 @@ namespace Game1.Model
                         playerIsOnLap = true;
                         playerIsPastCheckPoint = false;
                         setBestLap();
+                        
+                     
                     }
 
                 }
@@ -262,25 +267,42 @@ namespace Game1.Model
             bestLap = 1000;
                 foreach(LapTimer lap in laps)
                 {
-                    Console.WriteLine("looping laps...");
+                   
                     if(bestLap > lap.getLapTime() )
                     {
-                        Console.WriteLine("New bestlap");
-
-                        
+                      
                         //just to avoid cheating.
                         if(lap.getLapTime() > 10.0f)
                         {
                             bestLap = lap.getLapTime();
-                        }
-                        
-                        
-                        Console.WriteLine(bestLap);
+                            
+                            if(hasPlayerWon())
+                            {
+                                playerWon = true;
+                            }       
+                        }                      
                     }
                 }
                 
             }
-           
+
+        public bool hasPlayerWon()
+        {
+            if(timeToBeat > lapTimer.getLapTime())
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public bool isPlayerWinner()
+        {
+            return playerWon;
+        }
+       
         public string getBestLapTime()
         {
             if(playerIsOnLap)
