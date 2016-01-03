@@ -13,11 +13,11 @@ namespace Game1.View
         private float scaleX;
         private float scaleY;
         private float scale;
-        
+        Viewport port;
 
         public MenuCamera(Viewport port)
         {
-
+            this.port = port;
             scaleX = port.Width;
             scaleY = port.Height;
 
@@ -65,7 +65,20 @@ namespace Game1.View
             return height / scaleY;
         }
 
+        public void update()
+        {
+            scaleX = port.Width;
+            scaleY = port.Height;
 
+            if (scaleX > scaleY)
+            {
+                scale = scaleX;
+            }
+            else
+            {
+                scale = scaleY;
+            }
+        }
 
     }
 }

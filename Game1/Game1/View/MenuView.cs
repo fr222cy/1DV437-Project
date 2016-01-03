@@ -54,7 +54,7 @@ namespace Game1.View
              Vector2 mouseModelPosition = camera.getClickModelCoords(mousePosition);
           
       
-            //TODO: FIX PLAYBUTTON FOR FULLSCREEN
+
 
             if (playButtonPos.X >= mouseModelPosition.X - buttonModelWidth && playButtonPos.X <=  mouseModelPosition.X + buttonModelWidth
             && playButtonPos.Y >= mouseModelPosition.Y - buttonModelHeight && playButtonPos.Y <= mouseModelPosition.Y + buttonModelHeight)
@@ -136,7 +136,7 @@ namespace Game1.View
                     graphics.ApplyChanges();
                 }
             }
-
+           
             return false;
         }
 
