@@ -14,6 +14,7 @@ namespace Game1
         Rectangle pitStopTile;
         List<Rectangle> goalTiles = new List<Rectangle>();
         Rectangle checkPointTile;
+        List<Rectangle> mudTiles = new List<Rectangle>();
         public Tiles(int[,] map)
         {
             for (int x = 0; x < map.GetLength(1); x++)
@@ -51,6 +52,13 @@ namespace Game1
                         checkPointTile = new Rectangle(x, y, 1, 1);
                     }
 
+                    // Mud tiles
+                    if(tileNumber == 17)
+                    {
+                        Rectangle mudTile = new Rectangle(x, y, 1, 1);
+                        mudTiles.Add(mudTile);
+                    }
+
                 }
             }
         }
@@ -73,6 +81,11 @@ namespace Game1
         public Rectangle getCheckPointTile()
         {
             return checkPointTile;
+        }
+
+        public List<Rectangle> getMudTiles()
+        {
+            return mudTiles;
         }
 
     }

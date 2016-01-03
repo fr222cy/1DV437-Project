@@ -32,7 +32,7 @@ namespace Game1
             Content.RootDirectory = "Content";
             graphics.PreferredBackBufferWidth = 1280;
             graphics.PreferredBackBufferHeight = 960;
-            graphics.IsFullScreen = true;
+            graphics.IsFullScreen = false;
         }
 
         
@@ -96,7 +96,7 @@ namespace Game1
       
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.CornflowerBlue);
+            GraphicsDevice.Clear(Color.SlateGray);
             
             switch (CurrentGameState)
             {

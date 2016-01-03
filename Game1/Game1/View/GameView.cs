@@ -21,15 +21,12 @@ namespace Game1.View
             this.camera = camera;
         }
 
-        public void Update()
-        {
-
-        }
+ 
 
         public void drawPlayer(SpriteBatch sBatch, Texture2D player, float elapsedTime)
         {
 
-            //camera.Update( car.GetPosition(), player.Width);
+     
             
            float scale = camera.getScale(car.getSize(), player.Width);
 
@@ -86,6 +83,27 @@ namespace Game1.View
             sBatch.End();
         }
 
+        public void drawLevel(SpriteBatch sBatch, SpriteFont font, int level)
+        {
+            float fontWidth = 30;
+            float scale = camera.getScale(1, fontWidth);
+
+            sBatch.Begin();
+            sBatch.DrawString(font, "Level "+ level.ToString(), camera.getViewCoords(new Vector2(15, 10)), Color.Snow, 0f, Vector2.Zero, scale, SpriteEffects.None, 0);
+            sBatch.DrawString(font, "Press Space To begin", camera.getViewCoords(new Vector2(14, 11)), Color.Snow, 0f, Vector2.Zero, scale, SpriteEffects.None, 0);
+            sBatch.End();
+        }
+
+        public void drawWon(SpriteBatch sBatch, SpriteFont font, int level)
+        {
+            float fontWidth = 30;
+            float scale = camera.getScale(1, fontWidth);
+
+            sBatch.Begin();
+            sBatch.DrawString(font, "Congratulations! \nYou won level " + level.ToString() + " !", camera.getViewCoords(new Vector2(15, 10)), Color.Snow, 0f, Vector2.Zero, scale, SpriteEffects.None, 0);
+       
+            sBatch.End();
+        }
 
      
 

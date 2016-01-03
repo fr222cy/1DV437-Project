@@ -21,10 +21,13 @@ namespace Game1.Controller
         SpriteFont font;     
         Texture2D player;
         Texture2D pitBackground;
+        Levels level;
         float timeToBeat;
+        int levelCounter = 1;
+        Viewport port;
         private List<Texture2D> mapTexture = new List<Texture2D>();
 
-        PlayerState CurrentPlayerState = PlayerState.InPit;
+        PlayerState CurrentPlayerState = PlayerState.NextLevel;
 
         int[,] map;
         
@@ -32,6 +35,7 @@ namespace Game1.Controller
         {
             OnTrack,
             InPit,
+            NextLevel,
         }
        
         public void LoadContent(SpriteBatch sBatch, ContentManager Content,Viewport port)
@@ -40,13 +44,13 @@ namespace Game1.Controller
             pitBackground = Content.Load<Texture2D>("pitBackground.png");
             player = Content.Load<Texture2D>("playerCar.png");
             font = Content.Load<SpriteFont>("LapTimeFont");
-
+            this.port = port;
             //Create the TileMap
             //Inspired by http://xnatd.blogspot.se/2009/02/ok-so-first-part-of-our-tower-defence.html
             
             //Load Level 1.
-            Levels level = new Levels();
-            map = level.getLevel1();
+            level = new Levels();
+            map = level.getLevel(levelCounter);
             
             mapTexture.Add(grassTile);
             mapTexture.Add(Content.Load<Texture2D>("borderUpDown.png"));
@@ -65,8 +69,9 @@ namespace Game1.Controller
             mapTexture.Add(Content.Load<Texture2D>("PitlaneArrow.png"));
             mapTexture.Add(Content.Load<Texture2D>("PitlaneStop.png"));
             mapTexture.Add(Content.Load<Texture2D>("checkPoint.png"));
+            mapTexture.Add(Content.Load<Texture2D>("mudTile.png"));
 
-            timeToBeat = level.getLevel1Time();
+            timeToBeat = level.getLevelTime(levelCounter);
 
             carHandling = new CarHandling();
             gameSimulation = new GameSimulation(map, carHandling, timeToBeat);
@@ -78,41 +83,63 @@ namespace Game1.Controller
 
         public void Update(float elapsedTime)
         {
-
-           
-
-            //Check if player is in the pitlane.
-            if(gameSimulation.isInPit())
+       
+            //Check if player is in the pitlane || is changing level || on track.
+            if (gameSimulation.isInPit() && CurrentPlayerState != PlayerState.NextLevel)
             {
                 CurrentPlayerState = PlayerState.InPit;
+            }
+            else if(CurrentPlayerState == PlayerState.NextLevel)
+            {
+                CurrentPlayerState = PlayerState.NextLevel;
             }
             else
             {
                 CurrentPlayerState = PlayerState.OnTrack;
             }
 
-           
-           
-           
-            switch(CurrentPlayerState)
+            switch (CurrentPlayerState)
             {
                 case PlayerState.OnTrack:
-                gameSimulation.updateLap(elapsedTime);
-                gameSimulation.pitTimer(elapsedTime);
-                gameSimulation.carMovement(elapsedTime);
 
-                if (gameSimulation.isPlayerWinner())
-                {
-                    Console.WriteLine("PLAYER WON!");
-                }
+                    gameSimulation.updateLap(elapsedTime);
+                    gameSimulation.pitTimer(elapsedTime);
+                    gameSimulation.carMovement(elapsedTime);
 
-                break;
+                    if (gameSimulation.isPlayerWinner())
+                    {
+
+                        if(gameSimulation.isWonDelayTimerFinished(elapsedTime))
+                        {
+                            CurrentPlayerState = PlayerState.NextLevel;
+                            levelCounter++;
+                        }
+                    }
+                    break;
 
                 case PlayerState.InPit:
-                pitView.update(carHandling);
-                gameSimulation.depo();
-                break;
-            }  
+
+                    pitView.update(carHandling);
+                    gameSimulation.depo();
+                    break;
+
+                case PlayerState.NextLevel:
+                                   
+                  
+                    map = level.getLevel(levelCounter);
+
+                    timeToBeat = level.getLevelTime(levelCounter);
+                    carHandling = new CarHandling();
+                    gameSimulation = new GameSimulation(map, carHandling, timeToBeat);
+                    gameView = new GameView(camera, gameSimulation);
+
+                    if (Keyboard.GetState().IsKeyDown(Keys.Space))
+                    {
+                        CurrentPlayerState = PlayerState.InPit;
+                    }
+                    break;
+            }
+           
         }
 
 
@@ -124,10 +151,20 @@ namespace Game1.Controller
                 gameView.drawMap(sBatch, map, mapTexture);
                 gameView.drawPlayer(sBatch, player, elapsedTime);
                 gameView.drawText(sBatch, elapsedTime, font);
+
+                if (gameSimulation.isPlayerWinner())
+                {
+                    gameView.drawWon(sBatch, font, levelCounter);
+                }
+
                 break;
 
                 case PlayerState.InPit:
                 pitView.draw(sBatch, pitBackground, font, timeToBeat);
+                break;
+                
+                case PlayerState.NextLevel:
+                gameView.drawLevel(sBatch, font, levelCounter);
                 break;
             }
         }

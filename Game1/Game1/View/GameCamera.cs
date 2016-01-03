@@ -18,10 +18,11 @@ namespace Game1.View
         //Vector2 cameraOffset;
         private int tileSize;
         Viewport port;
+        int[,] map;
               public GameCamera(Viewport port, int[,] map , Texture2D player)
               {
                   tileSize = 1 ;
-
+                  this.map = map;
                   Vector2 ratio = new Vector2(4, 3);
                   this.port = port;
                   
@@ -61,6 +62,12 @@ namespace Game1.View
                   float screenY = (port.Height * position.Y);
 
                   return new Vector2(screenX, screenY);
+              }
+
+              public void update()
+              {
+                  scaleX = port.Width / map.GetLength(1);
+                  scaleY = port.Height / map.GetLength(0);
               }
 
     }

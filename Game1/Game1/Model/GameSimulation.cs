@@ -25,6 +25,7 @@ namespace Game1.Model
         bool playerIsPastCheckPoint = false;
         float bestLap = 100.00f;
         bool playerWon = false;
+        float gameWonTimer = 0f;
         //OBJECTS
         Tiles tiles;
         CarHandling handling;
@@ -49,7 +50,7 @@ namespace Game1.Model
 
  
 
-        public void resetGame()
+        public void resetCar()
         {
             playerCar.resetPosition(startPosition);
         }
@@ -152,6 +153,17 @@ namespace Game1.Model
                 {
                     carHit = true; 
                 }        
+            }
+            //Mudtiles
+            foreach (Rectangle tile in tiles.getMudTiles())
+            {
+                if (tile.X <= Math.Floor(playerCar.getPosition().X + hitBox.X) &&
+                tile.X >= Math.Floor(playerCar.getPosition().X - hitBox.X) &&
+                tile.Y <= Math.Floor(playerCar.getPosition().Y + hitBox.Y) &&
+                tile.Y >= Math.Floor(playerCar.getPosition().Y - hitBox.Y))
+                {
+                    speed *= 0.98f;
+                }
             }
 
             //If the player is on a goal tile, start a new laptime
@@ -328,6 +340,20 @@ namespace Game1.Model
             {
                 canPit = true;
                 timePit = 0;
+            }
+        }
+
+        public bool isWonDelayTimerFinished(float elapsedTime)
+        {
+            gameWonTimer += elapsedTime;
+
+            if(gameWonTimer > 5)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
             }
         }
 
