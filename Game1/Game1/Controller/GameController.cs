@@ -23,7 +23,7 @@ namespace Game1.Controller
         Texture2D pitBackground;
         Levels level;
         float timeToBeat;
-        int levelCounter = 1;
+        int levelCounter = 3;
         Viewport port;
         private List<Texture2D> mapTexture = new List<Texture2D>();
 

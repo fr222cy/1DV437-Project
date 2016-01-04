@@ -63,6 +63,7 @@ namespace Game1.Model
         public void resetPosition(Vector2 startposition)
         {
             position = startposition;
+            heading = 0f;
         }
 
 
