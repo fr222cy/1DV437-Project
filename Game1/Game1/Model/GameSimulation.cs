@@ -26,6 +26,7 @@ namespace Game1.Model
         float bestLap = 100.00f;
         bool playerWon = false;
         float gameWonTimer = 0f;
+        float stuckTimer = 0f;
         //OBJECTS
         Tiles tiles;
         CarHandling handling;
@@ -37,6 +38,8 @@ namespace Game1.Model
         float timePit = 0;
         bool pitted = true;
         bool canPit = false;
+        
+        
         
         public GameSimulation(int[,] map, CarHandling handling, float timeToBeat)
         {
@@ -88,20 +91,24 @@ namespace Game1.Model
                 if (Keyboard.GetState().IsKeyDown(Keys.Right))
                 {
                     steeringAngle += handling.getSteeringModifier();
-                    speed *= 0.994f;
+                    speed *= handling.getSteerSlowdown();
                 }
 
                 if (Keyboard.GetState().IsKeyDown(Keys.Left))
                 {
                     steeringAngle -= handling.getSteeringModifier();
-                    speed *= 0.994f;
+                    speed *= handling.getSteerSlowdown();
                 }
 
                 if (Keyboard.GetState().IsKeyDown(Keys.Space))
                 {
                     speed *= 0.92f;
                 }
-                
+
+                if (Keyboard.GetState().IsKeyDown(Keys.R))
+                {
+                    resetCar();
+                }
                 
                 if(!carHit)
                 {
@@ -110,11 +117,11 @@ namespace Game1.Model
                 }
                 else
                 {
-                    playerCar.setPosition(elapsedTime, -speed/4, steeringAngle);
+                    playerCar.setPosition(elapsedTime, -speed/4, -steeringAngle);
                 }
 
             
-        }
+        } 
 
         public float getRotation()
         {
@@ -194,6 +201,8 @@ namespace Game1.Model
                 }
             }   
         }
+
+      
 
         public bool isInPit()
         {
@@ -363,19 +372,23 @@ namespace Game1.Model
             if (Keyboard.GetState().IsKeyDown(Keys.W))
             {
                 handling.setAcceleration(0.002f);
+                handling.setSteerslowDown(-0.000001f);
             }
             if (Keyboard.GetState().IsKeyDown(Keys.Q))
             {
                 handling.setAcceleration(-0.002f);
+                handling.setSteerslowDown(0.000001f);
             }
             //Engine Limiter
             if (Keyboard.GetState().IsKeyDown(Keys.S))
             {
                 handling.setMaxSpeed(0.001f);
+                handling.setSteerslowDown(-0.000001f);
             }
             if (Keyboard.GetState().IsKeyDown(Keys.A))
             {    
                 handling.setMaxSpeed(-0.001f);
+                handling.setSteerslowDown(0.000001f);
             }    
             //Turn Radius
             if (Keyboard.GetState().IsKeyDown(Keys.Z))
