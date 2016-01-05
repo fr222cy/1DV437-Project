@@ -59,7 +59,7 @@ namespace Game1
      
         protected override void UnloadContent()
         {
-            // TODO: Unload any non ContentManager content here
+            Content.Unload(); 
         }
 
      

@@ -142,7 +142,7 @@ namespace Game1.Controller
         }
         public float getLevelTime(int level)
         {
-            if(level == 3)
+            if(level == 1)
             {
                 return 25f;
             }

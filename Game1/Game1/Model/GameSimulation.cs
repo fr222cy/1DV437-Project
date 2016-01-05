@@ -26,30 +26,30 @@ namespace Game1.Model
         float bestLap = 100.00f;
         bool playerWon = false;
         float gameWonTimer = 0f;
-        float stuckTimer = 0f;
+        
         //OBJECTS
         Tiles tiles;
         CarHandling handling;
         PlayerCar playerCar;
         LapTimer lapTimer;
         List<LapTimer> laps = new List<LapTimer>();
-
+        SoundHandler soundHandler;
         //PIT VARIABLES
         float timePit = 0;
         bool pitted = true;
         bool canPit = false;
         
         
-        
-        public GameSimulation(int[,] map, CarHandling handling, float timeToBeat)
+        public GameSimulation(int[,] map, CarHandling handling, float timeToBeat, SoundHandler sh )
         {
+            this.soundHandler = sh;
             this.map = map;
             this.handling = handling;
             this.tiles = new Tiles(map);
             this.playerCar = new PlayerCar(startPosition);
             this.hitBox = playerCar.getHitBox();
             this.timeToBeat = timeToBeat;
-        }
+        } 
 
  
 
@@ -75,6 +75,7 @@ namespace Game1.Model
                     if (speed > handling.getMaxSpeed())
                     {
                         speed -= handling.getAcceleration() * elapsedTime;
+                       
                     }
                 }
                 else
@@ -118,8 +119,9 @@ namespace Game1.Model
                 else
                 {
                     playerCar.setPosition(elapsedTime, -speed/4, -steeringAngle);
+                    soundHandler.setCrash();
                 }
-
+                
             
         } 
 
@@ -136,6 +138,11 @@ namespace Game1.Model
         public string getSpeedToKPH()
         {
             return String.Format("{0:0}KPH", -speed * 50);
+        }
+
+        public float getSpeed()
+        {
+            return -speed * 50;
         }
 
         public void collision(float elapsedTime)
@@ -158,7 +165,8 @@ namespace Game1.Model
                 tile.Y <=  Math.Floor(playerCar.getPosition().Y + hitBox.Y) &&
                 tile.Y >=  Math.Floor(playerCar.getPosition().Y - hitBox.Y) )
                 {
-                    carHit = true; 
+                    carHit = true;
+                    
                 }        
             }
             //Mudtiles

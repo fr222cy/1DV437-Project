@@ -19,3 +19,45 @@
 /processorParam:TextureFormat=Compressed
 /build:LapTimeFont.spritefont
 
+#begin loop_0.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:loop_0.wav
+
+#begin loop_1.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:loop_1.wav
+
+#begin loop_2.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:loop_2.wav
+
+#begin loop_3.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:loop_3.wav
+
+#begin loop_4.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:loop_4.wav
+
+#begin loop_5.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:loop_5.wav
+
+#begin crash.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:crash.wav
+

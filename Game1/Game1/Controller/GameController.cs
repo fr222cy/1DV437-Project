@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Content;
+using Microsoft.Xna.Framework.Audio;
 using Game1.View;
 using Game1.Model;
 
@@ -22,15 +23,22 @@ namespace Game1.Controller
         Texture2D player;
         Texture2D pitBackground;
         Levels level;
+        Texture2D red_particle;
         float timeToBeat;
-        int levelCounter = 3;
+        int levelCounter = 1;
         Viewport port;
         private List<Texture2D> mapTexture = new List<Texture2D>();
+        SoundHandler sh;
 
+        List<SoundEffect> engineSounds = new List<SoundEffect>();
+        SoundEffect crash;
         PlayerState CurrentPlayerState = PlayerState.NextLevel;
 
         int[,] map;
         
+     
+        
+
         enum PlayerState
         {
             OnTrack,
@@ -48,10 +56,11 @@ namespace Game1.Controller
             //Create the TileMap
             //Inspired by http://xnatd.blogspot.se/2009/02/ok-so-first-part-of-our-tower-defence.html
             
-            //Load Level 1.
+            //Load Levels.
             level = new Levels();
             map = level.getLevel(levelCounter);
             
+            // Add tile textures
             mapTexture.Add(grassTile);
             mapTexture.Add(Content.Load<Texture2D>("borderUpDown.png"));
             mapTexture.Add(Content.Load<Texture2D>("borderUp.png"));
@@ -71,13 +80,25 @@ namespace Game1.Controller
             mapTexture.Add(Content.Load<Texture2D>("checkPoint.png"));
             mapTexture.Add(Content.Load<Texture2D>("mudTile.png"));
 
-            timeToBeat = level.getLevelTime(levelCounter);
+            // Add sounds
+            engineSounds.Add(Content.Load<SoundEffect>("loop_0"));
+            engineSounds.Add(Content.Load<SoundEffect>("loop_1"));
+            engineSounds.Add(Content.Load<SoundEffect>("loop_2"));
+            engineSounds.Add(Content.Load<SoundEffect>("loop_3"));
+            engineSounds.Add(Content.Load<SoundEffect>("loop_4"));
+            engineSounds.Add(Content.Load<SoundEffect>("loop_5"));
+            crash = Content.Load<SoundEffect>("crash");
 
+            //Particle Texture
+            red_particle = Content.Load<Texture2D>("red.png");
+        
+            timeToBeat = level.getLevelTime(levelCounter);
+            sh = new SoundHandler();
             carHandling = new CarHandling();
-            gameSimulation = new GameSimulation(map, carHandling, timeToBeat);
+            gameSimulation = new GameSimulation(map, carHandling, timeToBeat, sh);
             camera = new GameCamera(port, map, player);
             pitView = new PitView(camera);
-            gameView = new GameView(camera, gameSimulation);
+            gameView = new GameView(camera, gameSimulation, sh);
             
         }
 
@@ -98,6 +119,7 @@ namespace Game1.Controller
                 CurrentPlayerState = PlayerState.OnTrack;
             }
 
+            //Check if player is ontack, inpit or is loading the next level. 
             switch (CurrentPlayerState)
             {
                 case PlayerState.OnTrack:
@@ -105,7 +127,7 @@ namespace Game1.Controller
                     gameSimulation.updateLap(elapsedTime);
                     gameSimulation.pitTimer(elapsedTime);
                     gameSimulation.carMovement(elapsedTime);
-
+                    gameView.updateAnimations(elapsedTime);
                     if (gameSimulation.isPlayerWinner())
                     {
 
@@ -130,8 +152,8 @@ namespace Game1.Controller
 
                     timeToBeat = level.getLevelTime(levelCounter);
                     carHandling = new CarHandling();
-                    gameSimulation = new GameSimulation(map, carHandling, timeToBeat);
-                    gameView = new GameView(camera, gameSimulation);
+                    gameSimulation = new GameSimulation(map, carHandling, timeToBeat, sh);
+                    gameView = new GameView(camera, gameSimulation, sh);
 
                     if (Keyboard.GetState().IsKeyDown(Keys.Space))
                     {
@@ -142,15 +164,18 @@ namespace Game1.Controller
            
         }
 
-
         public void Draw(SpriteBatch sBatch, float elapsedTime)
         {
             switch(CurrentPlayerState)
             {
+
+                //Calling Drawmethods depending on the player state. 
                 case PlayerState.OnTrack:
                 gameView.drawMap(sBatch, map, mapTexture);
                 gameView.drawPlayer(sBatch, player, elapsedTime);
                 gameView.drawText(sBatch, elapsedTime, font);
+                gameView.animationsAndSounds(engineSounds, elapsedTime, crash);
+                gameView.drawAnimations(elapsedTime, red_particle, sBatch);
 
                 if (gameSimulation.isPlayerWinner())
                 {

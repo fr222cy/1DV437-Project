@@ -162,8 +162,7 @@ namespace Game1.View
             sBatch.Draw(cursor, mousePosition, cursor.Bounds, Color.White, 0f, Vector2.Zero, scale, SpriteEffects.None, 0);
             sBatch.End();
 
-            Console.WriteLine(mousePosition);
-            Console.WriteLine(cursor.Width);
+          
         }
         
 

@@ -5,29 +5,29 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Audio;
 using Game1.Model;
 
 namespace Game1.View
 {
-    class GameView
+    class GameView 
     {
-
+        float timeElapsedEngine = 0;
+        float timeElapsedCrash = 0;
         GameCamera camera;
         GameSimulation car;
-
-        public GameView(GameCamera camera, GameSimulation car)
+        SoundHandler soundHandler;
+        Animations animations;
+        public GameView(GameCamera camera, GameSimulation car, SoundHandler sh)
         {
+            this.soundHandler = sh;
             this.car = car;
             this.camera = camera;
+            this.animations = new Animations(camera);
         }
 
- 
-
         public void drawPlayer(SpriteBatch sBatch, Texture2D player, float elapsedTime)
-        {
-
-     
-            
+        {           
            float scale = camera.getScale(car.getSize(), player.Width);
 
             sBatch.Begin();
@@ -62,7 +62,6 @@ namespace Game1.View
                     Texture2D texture = mapTexture[textureIndex];
                     
                     sBatch.Draw(texture, new Rectangle(x * (int)tileSize, y * (int)tileSize, (int)tileSize, (int)tileSize)  , Color.White);
-
                 }   
             }       
           
@@ -105,7 +104,116 @@ namespace Game1.View
             sBatch.End();
         }
 
-     
+        public void updateAnimations(float elapsedTime)
+        {
+            if(animations.animationActive())
+            {
+                animations.update(elapsedTime);
+                
+            }
+        }
+        public void drawAnimations(float elapsedTime, Texture2D particle, SpriteBatch sbatch)
+        {
+            if (animations.animationActive())
+            {
+                animations.draw(particle, sbatch);
+            }
+        }
 
+        public void animationsAndSounds(List<SoundEffect> engineSounds, float elapsedTime, SoundEffect crash)
+        {
+            
+            timeElapsedEngine += 0.01f;
+            timeElapsedCrash += 0.01f;
+            
+                var e0 = engineSounds.ElementAt(0).CreateInstance();
+                var e1 = engineSounds.ElementAt(1).CreateInstance();
+                var e2 = engineSounds.ElementAt(2).CreateInstance();
+                var e3 = engineSounds.ElementAt(3).CreateInstance();
+                var e4 = engineSounds.ElementAt(4).CreateInstance();
+                var e5 = engineSounds.ElementAt(5).CreateInstance();
+            
+                
+                var crashSound = crash.CreateInstance();
+                float volume = 0.1f;
+                if(timeElapsedEngine >= 0.35f)
+                {
+                    if (this.car.getSpeed() <= 1 && this.car.getSpeed() < 0)
+                    {
+                        if (e0.State != SoundState.Playing)
+                        {
+                            e0.Volume = volume;
+                            e0.Play();
+                        }
+                        
+                      
+                    }
+                                   
+                    if (this.car.getSpeed() > 1 && this.car.getSpeed() < 40)
+                    {
+                        if(e1.State != SoundState.Playing)
+                        {
+                            e1.Volume = volume;
+                            e1.Play();
+                        }
+                       
+                        
+                    }
+                    if (this.car.getSpeed() >= 40 && this.car.getSpeed() < 80)
+                    {
+                        if (e2.State != SoundState.Playing)
+                        {
+                            e2.Volume = volume;
+                            e2.Play();
+                        }
+                    }
+                    if (this.car.getSpeed() > 80 && this.car.getSpeed() < 130)
+                    {
+                        if (e3.State != SoundState.Playing)
+                        {
+                            e3.Volume = volume;
+                            e3.Play();
+                        }
+                    }
+                    if (this.car.getSpeed() >= 130 && this.car.getSpeed() < 180)
+                    {
+                        if(e4.State != SoundState.Playing)
+                        {
+                            e4.Volume = volume;
+                            e4.Play(); 
+                        }
+                        
+                    }
+                    if (this.car.getSpeed() >= 180)
+                    {
+                        if (e5.State != SoundState.Playing)
+                        {
+                            e5.Volume = volume;
+                            e5.Play(); 
+                        }
+                        
+                    }
+
+                    timeElapsedEngine = 0;               
+                }
+
+                
+                
+            if(soundHandler.isCrashing())
+            {
+                
+                if(crashSound.State != SoundState.Playing && timeElapsedCrash > 0.6f)
+                {
+                    crashSound.Volume = volume;
+                    crashSound.Play();
+                    animations.spawn(this.car.GetPosition());
+                 
+                    timeElapsedCrash = 0;
+                }
+                
+            }
+        }
+
+      
     }
 }
