@@ -26,6 +26,7 @@ namespace Game1.Controller
         MouseState lastMouseState;
         MouseState currentMouseState;
         Texture2D cursor;
+        
         bool hasClicked = false;
         bool hasClickedPlay = false;
         public MenuController(GraphicsDeviceManager graphics)

@@ -7,11 +7,12 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Audio;
+using Microsoft.Xna.Framework.Media;
 using Game1.View;
 using Game1.Model;
 
 namespace Game1.Controller
-{
+{///TODO: FIX "GAME COMPLETE", Easier Sliding sound, Balance car setup.
     class GameController
     {
         PitView pitView;
@@ -19,31 +20,33 @@ namespace Game1.Controller
         GameView gameView;
         GameCamera camera;
         GameSimulation gameSimulation;
-        SpriteFont font;     
-        Texture2D player;
-        Texture2D pitBackground;
         Levels level;
-        Texture2D red_particle;
+        SpriteFont font;
+        Viewport port;
+        SoundHandler sh;
+        List<Texture2D> mapTexture = new List<Texture2D>();
+        List<SoundEffectInstance> engineSounds = new List<SoundEffectInstance>();
+        SoundEffectInstance crash, tire_scream, e0, air_horn;
+        Texture2D player,
+                  pitBackground,
+                  red_particle,
+                  smoke,
+                  skidmark,
+                  mudmark;
+
         float timeToBeat;
         int levelCounter = 1;
-        Viewport port;
-        private List<Texture2D> mapTexture = new List<Texture2D>();
-        SoundHandler sh;
-
-        List<SoundEffect> engineSounds = new List<SoundEffect>();
-        SoundEffect crash;
-        PlayerState CurrentPlayerState = PlayerState.NextLevel;
-
+        const int MAX_LEVEL = 5;
         int[,] map;
-        
-     
-        
 
+  
+        PlayerState CurrentPlayerState = PlayerState.NextLevel;
         enum PlayerState
         {
             OnTrack,
             InPit,
             NextLevel,
+            GameCompleted,
         }
        
         public void LoadContent(SpriteBatch sBatch, ContentManager Content,Viewport port)
@@ -79,19 +82,18 @@ namespace Game1.Controller
             mapTexture.Add(Content.Load<Texture2D>("PitlaneStop.png"));
             mapTexture.Add(Content.Load<Texture2D>("checkPoint.png"));
             mapTexture.Add(Content.Load<Texture2D>("mudTile.png"));
+            mapTexture.Add(Content.Load<Texture2D>("arrowLeft.png"));
 
             // Add sounds
-            engineSounds.Add(Content.Load<SoundEffect>("loop_0"));
-            engineSounds.Add(Content.Load<SoundEffect>("loop_1"));
-            engineSounds.Add(Content.Load<SoundEffect>("loop_2"));
-            engineSounds.Add(Content.Load<SoundEffect>("loop_3"));
-            engineSounds.Add(Content.Load<SoundEffect>("loop_4"));
-            engineSounds.Add(Content.Load<SoundEffect>("loop_5"));
-            crash = Content.Load<SoundEffect>("crash");
-
+            e0 = Content.Load<SoundEffect>("loop_0").CreateInstance();
+            tire_scream = Content.Load<SoundEffect>("tire-scream").CreateInstance();
+            crash = Content.Load<SoundEffect>("crash").CreateInstance();
+            air_horn = Content.Load<SoundEffect>("air-horn").CreateInstance();
             //Particle Texture
             red_particle = Content.Load<Texture2D>("red.png");
-        
+            smoke = Content.Load<Texture2D>("smoke.png");
+            skidmark = Content.Load<Texture2D>("black.png");
+            mudmark = Content.Load<Texture2D>("mudMarks.png");
             timeToBeat = level.getLevelTime(levelCounter);
             sh = new SoundHandler();
             carHandling = new CarHandling();
@@ -123,7 +125,7 @@ namespace Game1.Controller
             switch (CurrentPlayerState)
             {
                 case PlayerState.OnTrack:
-
+                    MediaPlayer.Pause();
                     gameSimulation.updateLap(elapsedTime);
                     gameSimulation.pitTimer(elapsedTime);
                     gameSimulation.carMovement(elapsedTime);
@@ -138,27 +140,54 @@ namespace Game1.Controller
                         }
                     }
                     break;
+                    
 
                 case PlayerState.InPit:
 
-                    pitView.update(carHandling);
-                    gameSimulation.depo();
-                    break;
+                        MediaPlayer.Resume();
+                        MediaPlayer.Volume = 0.05f;
+                        e0.Volume = 0;
+                        pitView.update(carHandling);
+                        gameSimulation.depo();
+                        break;
 
                 case PlayerState.NextLevel:
-                                   
-                  
-                    map = level.getLevel(levelCounter);
 
-                    timeToBeat = level.getLevelTime(levelCounter);
-                    carHandling = new CarHandling();
-                    gameSimulation = new GameSimulation(map, carHandling, timeToBeat, sh);
-                    gameView = new GameView(camera, gameSimulation, sh);
+                        if(levelCounter >= MAX_LEVEL)
+                        {
+                            CurrentPlayerState = PlayerState.GameCompleted;
+                            break;
+                        }
+                        MediaPlayer.Resume();
+                        MediaPlayer.Volume = 0.05f;
+                        e0.Volume = 0;
+                        map = level.getLevel(levelCounter);
 
-                    if (Keyboard.GetState().IsKeyDown(Keys.Space))
-                    {
-                        CurrentPlayerState = PlayerState.InPit;
-                    }
+                        timeToBeat = level.getLevelTime(levelCounter);
+                        carHandling = new CarHandling();
+                        gameSimulation = new GameSimulation(map, carHandling, timeToBeat, sh);
+                        gameView = new GameView(camera, gameSimulation, sh);
+
+                        if (Keyboard.GetState().IsKeyDown(Keys.Space))
+                        {
+                            CurrentPlayerState = PlayerState.InPit;
+                        }
+
+                    break;
+
+                case PlayerState.GameCompleted:
+
+                        if (Keyboard.GetState().IsKeyDown(Keys.Enter))
+                        {
+
+                            levelCounter = 1;
+                            CurrentPlayerState = PlayerState.NextLevel;
+                        }
+
+                        if(Keyboard.GetState().IsKeyDown(Keys.Escape))
+                        {
+                        
+                        }
                     break;
             }
            
@@ -172,10 +201,11 @@ namespace Game1.Controller
                 //Calling Drawmethods depending on the player state. 
                 case PlayerState.OnTrack:
                 gameView.drawMap(sBatch, map, mapTexture);
+                gameView.drawAnimations(red_particle, sBatch, smoke, skidmark, mudmark);
                 gameView.drawPlayer(sBatch, player, elapsedTime);
                 gameView.drawText(sBatch, elapsedTime, font);
-                gameView.animationsAndSounds(engineSounds, elapsedTime, crash);
-                gameView.drawAnimations(elapsedTime, red_particle, sBatch);
+                gameView.animationsAndSounds(e0, elapsedTime, crash, tire_scream, air_horn);
+               
 
                 if (gameSimulation.isPlayerWinner())
                 {
@@ -190,6 +220,9 @@ namespace Game1.Controller
                 
                 case PlayerState.NextLevel:
                 gameView.drawLevel(sBatch, font, levelCounter);
+                break;
+
+                case PlayerState.GameCompleted:
                 break;
             }
         }

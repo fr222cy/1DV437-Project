@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Media;
 
 namespace Game1
 {
@@ -12,7 +13,7 @@ namespace Game1
     {
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
-
+        Song song;
         GameController gameController;
         MenuController menuController;
 
@@ -44,6 +45,11 @@ namespace Game1
       
         protected override void LoadContent()
         {
+
+            song = Content.Load<Song>("Motorbike-rock-3");
+            MediaPlayer.Play(song);
+            MediaPlayer.Volume = 0.1f; 
+            
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
             menuController = new MenuController(graphics);
@@ -69,10 +75,10 @@ namespace Game1
             switch(CurrentGameState)
             {
                 case Gamestate.Menu:
-
+                    
                     //this.IsMouseVisible = true;
                     hasClickedPlay = menuController.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
-   
+                    gameController.LoadContent(spriteBatch, Content, GraphicsDevice.Viewport);
                     if(hasClickedPlay)
                     {
                         CurrentGameState = Gamestate.Playing;
@@ -83,6 +89,7 @@ namespace Game1
 
                     if (Keyboard.GetState().IsKeyDown(Keys.Escape))
                     {
+                        
                         CurrentGameState = Gamestate.Menu;
                     }
 

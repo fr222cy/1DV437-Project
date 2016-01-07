@@ -61,3 +61,21 @@
 /processorParam:Quality=Best
 /build:crash.wav
 
+#begin Motorbike-rock-3.mp3
+/importer:Mp3Importer
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:Motorbike-rock-3.mp3
+
+#begin tire-scream.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:tire-scream.wav
+
+#begin air-horn.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:air-horn.wav
+

@@ -22,7 +22,7 @@ namespace Game1.Model
             position = startPosition;
             size = 0.65f;
             wheelBase = 0.25f;
-            hitBox = new Vector2(wheelBase, wheelBase/2);
+            hitBox = new Vector2(wheelBase/2, wheelBase/3);
         }
 
         public float getSize()

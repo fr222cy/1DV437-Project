@@ -26,7 +26,10 @@ namespace Game1.Model
         float bestLap = 100.00f;
         bool playerWon = false;
         float gameWonTimer = 0f;
-        
+        float stuckTipsTimer = 0f;
+        float tireScreamTimer = 0;
+        bool showStuckTips = false;
+
         //OBJECTS
         Tiles tiles;
         CarHandling handling;
@@ -89,41 +92,82 @@ namespace Game1.Model
                 {
                     speed += handling.getAcceleration() * elapsedTime;
                 }
+
                 if (Keyboard.GetState().IsKeyDown(Keys.Right))
                 {
+                    tireScreamTimer += 0.01f;
                     steeringAngle += handling.getSteeringModifier();
                     speed *= handling.getSteerSlowdown();
                 }
 
                 if (Keyboard.GetState().IsKeyDown(Keys.Left))
                 {
+                    tireScreamTimer += 0.01f;
                     steeringAngle -= handling.getSteeringModifier();
                     speed *= handling.getSteerSlowdown();
+                }
+
+                if(Keyboard.GetState().IsKeyUp(Keys.Left) && Keyboard.GetState().IsKeyUp(Keys.Right))
+                {
+                    tireScreamTimer = 0;
                 }
 
                 if (Keyboard.GetState().IsKeyDown(Keys.Space))
                 {
                     speed *= 0.92f;
+                    soundHandler.setTireScream();
                 }
 
-                if (Keyboard.GetState().IsKeyDown(Keys.R))
-                {
-                    resetCar();
-                }
+                
                 
                 if(!carHit)
                 {
                     playerCar.setPosition(elapsedTime, speed, steeringAngle);
                     steeringAngle *= 0.8f;
+                 
+                    if(shouldShowStuckTips())
+                    {
+                        stuckTipsTimer += elapsedTime;
+
+                        if(stuckTipsTimer > 7)
+                        {
+                            stuckTipsTimer = 0;
+                            showStuckTips = false;
+                        }
+                    }
                 }
+
                 else
                 {
                     playerCar.setPosition(elapsedTime, -speed/4, -steeringAngle);
                     soundHandler.setCrash();
+                    stuckTipsTimer+= elapsedTime;
+                    if(stuckTipsTimer > 3f)
+                    {
+                        showStuckTips = true;
+
+                        if (Keyboard.GetState().IsKeyDown(Keys.T))
+                        {
+                            resetCar();
+                            showStuckTips = false;
+                            stuckTipsTimer = 0;
+                        }
+                     
+                    }
+
+
                 }
                 
-            
+                if(tireScreamTimer > 0.35 && speed < -1.5)
+                {
+                    soundHandler.setTireScream();
+                }
         } 
+
+        public bool shouldShowStuckTips()
+        {
+            return showStuckTips;
+        }
 
         public float getRotation()
         {
@@ -178,6 +222,9 @@ namespace Game1.Model
                 tile.Y >= Math.Floor(playerCar.getPosition().Y - hitBox.Y))
                 {
                     speed *= 0.98f;
+
+                    soundHandler.setMud();
+
                 }
             }
 
@@ -245,17 +292,16 @@ namespace Game1.Model
                 {
                     if (!playerIsOnLap || playerIsPastCheckPoint == true)
                     {
+                        soundHandler.setGoalSound();
                         laps.Add(new LapTimer());
                         if(laps.Count >= 2)
                         {
                             laps[laps.Count - 2].lapCompleted();
                         }
-                        
+
                         playerIsOnLap = true;
                         playerIsPastCheckPoint = false;
                         setBestLap();
-                        
-                     
                     }
 
                 }
