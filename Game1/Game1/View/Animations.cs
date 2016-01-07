@@ -11,66 +11,98 @@ namespace Game1.View
 {
     class Animations
     {
-       
-        
-        List<carSplitter> splitterParticles = new List<carSplitter>();
-    
 
+
+        List<carSplitter> splitterParticles = new List<carSplitter>();
+        List<Skidmark> skidmarks = new List<Skidmark>();
+        List<Skidmark> mudMarks = new List<Skidmark>();
+        List<Smoke> smokes = new List<Smoke>();
+        List<Smoke> smokesToRemove = new List<Smoke>();
         private float size;
-        private const int MAX_SPLITTER_PARTICLES = 10;
+        private const int MAX_SPLITTER_PARTICLES = 13;
+        private const int MAX_SMOKE_PARTICLES = 10;
         private GameCamera camera;
-        int counter = 0;
+
         public Animations(GameCamera camera)
         {
             this.size = 0.05f;
             this.camera = camera;
-    
         }
 
-        public void spawn(Vector2 startPosition)
-        {   
+        public void spawnParticles(Vector2 startPosition)
+        {
             for (int i = 0; i < MAX_SPLITTER_PARTICLES; i++)
             {
-                
                 splitterParticles.Add(new carSplitter(i, camera, size, startPosition));
-             
                 splitterParticles.ElementAt(i).spawn();
             }
-
-            
         }
-       
+
+        public void spawnSmoke(Vector2 startPosition)
+        {
+            smokes.Add(new Smoke(camera, size, startPosition));      
+        }
+
+        public void spawnSkidMarks(Vector2 startPosition)
+        {
+            skidmarks.Add(new Skidmark(camera, size, startPosition));
+        }
+
+        public void spawnMudMarks(Vector2 startPosition)
+        {
+            mudMarks.Add(new Skidmark(camera, size, startPosition));
+        }
+
+
 
         public void update(float elapsedTime)
-        { 
-            foreach(carSplitter splitterParticle in splitterParticles)
+        {
+            foreach (carSplitter splitterParticle in splitterParticles)
             {
-               
                 splitterParticle.update(elapsedTime);
             }
-           
-        }
+                
 
-        public void draw(Texture2D splitter, SpriteBatch spriteBatch)
-        {       
-            foreach(carSplitter splitterParticle in splitterParticles)
+            foreach (Smoke smokeParticle in smokes)
             {
-                splitterParticle.draw(splitter, spriteBatch);
-            }
+                smokeParticle.update(elapsedTime);       
             
+                if(smokeParticle.isSmokeDone())
+                {
+                    smokesToRemove.Add(smokeParticle);
+                }
+            }
+
+            foreach (Smoke smoke in smokesToRemove)
+            {
+                smokes.Remove(smoke);
+            }
+   
         }
 
-        public bool animationActive()
+        public void draw(Texture2D splitter, SpriteBatch spriteBatch, Texture2D smoke, Texture2D skidmarkTexture, Texture2D mudMarkTexture)
         {
-            if(splitterParticles != null)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+                foreach (carSplitter splitterParticle in splitterParticles)
+                {
+                    splitterParticle.draw(splitter, spriteBatch);
+                }
+
+                foreach (Smoke smokeParticle in smokes)
+                {
+                    smokeParticle.draw(smoke, spriteBatch);
+                }
+
+                foreach(Skidmark skidmark in skidmarks)
+                {
+                    skidmark.draw(skidmarkTexture, spriteBatch);
+                }
+
+                foreach(Skidmark mudmark in mudMarks)
+                {
+                    mudmark.draw(mudMarkTexture, spriteBatch);
+                }
         }
-    }
+
+    } 
  }
 

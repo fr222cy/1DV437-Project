@@ -14,6 +14,7 @@ namespace Game1.View
     {
         float timeElapsedEngine = 0;
         float timeElapsedCrash = 0;
+        float timeElapsedTireScream = 0;
         GameCamera camera;
         GameSimulation car;
         SoundHandler soundHandler;
@@ -76,9 +77,16 @@ namespace Game1.View
             float scale = camera.getScale(1, fontWidth);
 
             sBatch.Begin();
+            sBatch.DrawString(font, (GC.GetTotalMemory(false) / 1000).ToString() , camera.getViewCoords(new Vector2(0, 20)), Color.White, 0f, Vector2.Zero,scale, SpriteEffects.None, 0);
             sBatch.DrawString(font, this.car.getBestLapTime(), camera.getViewCoords(new Vector2(0, 21)), Color.Snow, 0f, Vector2.Zero, scale, SpriteEffects.None, 0);
             sBatch.DrawString(font, this.car.getLapTime(), camera.getViewCoords(new Vector2(0, 22)), Color.Snow, 0f, Vector2.Zero, scale, SpriteEffects.None, 0);
             sBatch.DrawString(font,this.car.getSpeedToKPH(), camera.getViewCoords(new Vector2(0, 23)), Color.Snow, 0f, Vector2.Zero, scale, SpriteEffects.None,0);
+
+            if(this.car.shouldShowStuckTips())
+            {
+                sBatch.DrawString(font, "Stuck? Press 'T' to get back to pit.", camera.getViewCoords(this.car.GetPosition()), Color.Snow, 0f, Vector2.Zero, scale/2, SpriteEffects.None, 0);
+            }
+
             sBatch.End();
         }
 
@@ -106,114 +114,117 @@ namespace Game1.View
 
         public void updateAnimations(float elapsedTime)
         {
-            if(animations.animationActive())
-            {
-                animations.update(elapsedTime);
-                
-            }
+                animations.update(elapsedTime);    
         }
-        public void drawAnimations(float elapsedTime, Texture2D particle, SpriteBatch sbatch)
+        public void drawAnimations(Texture2D particle, SpriteBatch sbatch, Texture2D smoke, Texture2D skidmark, Texture2D mudmark)
         {
-            if (animations.animationActive())
-            {
-                animations.draw(particle, sbatch);
-            }
+                animations.draw(particle, sbatch, smoke, skidmark, mudmark);
         }
 
-        public void animationsAndSounds(List<SoundEffect> engineSounds, float elapsedTime, SoundEffect crash)
+        public void animationsAndSounds(
+            SoundEffectInstance engineSound,
+            float elapsedTime,
+            SoundEffectInstance crash,
+            SoundEffectInstance tire_scream,
+            SoundEffectInstance goalSound)
         {
             
-            timeElapsedEngine += 0.01f;
-            timeElapsedCrash += 0.01f;
-            
-                var e0 = engineSounds.ElementAt(0).CreateInstance();
-                var e1 = engineSounds.ElementAt(1).CreateInstance();
-                var e2 = engineSounds.ElementAt(2).CreateInstance();
-                var e3 = engineSounds.ElementAt(3).CreateInstance();
-                var e4 = engineSounds.ElementAt(4).CreateInstance();
-                var e5 = engineSounds.ElementAt(5).CreateInstance();
-            
-                
-                var crashSound = crash.CreateInstance();
+            timeElapsedEngine += elapsedTime;
+            timeElapsedCrash += elapsedTime;
+            timeElapsedTireScream += elapsedTime;
+         
+
                 float volume = 0.1f;
-                if(timeElapsedEngine >= 0.35f)
+                if(timeElapsedEngine >= 0.1f)
                 {
-                    if (this.car.getSpeed() <= 1 && this.car.getSpeed() < 0)
+
+                    if (this.car.getSpeed() > 0)
                     {
-                        if (e0.State != SoundState.Playing)
-                        {
-                            e0.Volume = volume;
-                            e0.Play();
-                        }
-                        
-                      
+                            engineSound.Volume = volume;
+                            engineSound.Pitch = 0f;                      
                     }
                                    
                     if (this.car.getSpeed() > 1 && this.car.getSpeed() < 40)
                     {
-                        if(e1.State != SoundState.Playing)
-                        {
-                            e1.Volume = volume;
-                            e1.Play();
-                        }
-                       
-                        
+                        engineSound.Pitch = 0.2f;
                     }
+
                     if (this.car.getSpeed() >= 40 && this.car.getSpeed() < 80)
                     {
-                        if (e2.State != SoundState.Playing)
-                        {
-                            e2.Volume = volume;
-                            e2.Play();
-                        }
+                        engineSound.Pitch = 0.3f;      
                     }
+
                     if (this.car.getSpeed() > 80 && this.car.getSpeed() < 130)
                     {
-                        if (e3.State != SoundState.Playing)
-                        {
-                            e3.Volume = volume;
-                            e3.Play();
-                        }
+                        engineSound.Pitch = 0.4f;    
                     }
+
                     if (this.car.getSpeed() >= 130 && this.car.getSpeed() < 180)
                     {
-                        if(e4.State != SoundState.Playing)
-                        {
-                            e4.Volume = volume;
-                            e4.Play(); 
-                        }
-                        
+                        engineSound.Pitch = 0.5f;   
                     }
+
                     if (this.car.getSpeed() >= 180)
                     {
-                        if (e5.State != SoundState.Playing)
-                        {
-                            e5.Volume = volume;
-                            e5.Play(); 
-                        }
-                        
+                        engineSound.Pitch = 0.6f;   
                     }
-
-                    timeElapsedEngine = 0;               
+                    
+                    timeElapsedEngine = 0;
+                    engineSound.Volume = volume;
+                    engineSound.Play();
+                    engineSound.IsLooped = true;
                 }
 
-                
+    
                 
             if(soundHandler.isCrashing())
             {
                 
-                if(crashSound.State != SoundState.Playing && timeElapsedCrash > 0.6f)
+                if(crash.State != SoundState.Playing && timeElapsedCrash > 0.6f)
                 {
-                    crashSound.Volume = volume;
-                    crashSound.Play();
-                    animations.spawn(this.car.GetPosition());
-                 
+                    crash.Volume = volume;
+                    crash.Play();
+                    animations.spawnParticles(this.car.GetPosition());
+                    
                     timeElapsedCrash = 0;
                 }
                 
             }
-        }
+          
 
-      
-    }
+            if (soundHandler.isTireScreaming())
+            {
+
+                if (tire_scream.State != SoundState.Playing && timeElapsedTireScream > 0.6f)
+                {
+                    tire_scream.Volume = volume;
+                    tire_scream.Play();
+
+                    timeElapsedTireScream = 0;
+                }
+                animations.spawnSkidMarks(this.car.GetPosition());               
+                animations.spawnSmoke(this.car.GetPosition());
+            }
+            else
+            {
+                tire_scream.Stop();
+            }
+
+            if(soundHandler.isInMud())
+            {
+                animations.spawnMudMarks(this.car.GetPosition());
+            }
+
+
+            if(soundHandler.isInGoal())
+            {
+                goalSound.Volume = 0.1f;
+                goalSound.Play();
+            }
+            
+        }
+           
+
+    } 
 }
+
