@@ -179,7 +179,7 @@ namespace Game1.Controller
             }
             if(level == 2)
             {
-                return 17f;
+                return 18f;
             }
             if(level == 3)
             {
