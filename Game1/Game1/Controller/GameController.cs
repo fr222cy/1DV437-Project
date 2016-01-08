@@ -29,6 +29,7 @@ namespace Game1.Controller
         SoundEffectInstance crash, tire_scream, e0, air_horn;
         Texture2D player,
                   pitBackground,
+                  gameCompleteBackground,
                   red_particle,
                   smoke,
                   skidmark,
@@ -38,6 +39,7 @@ namespace Game1.Controller
         int levelCounter = 1;
         const int MAX_LEVEL = 5;
         int[,] map;
+        bool paused = false;
 
   
         PlayerState CurrentPlayerState = PlayerState.NextLevel;
@@ -47,12 +49,14 @@ namespace Game1.Controller
             InPit,
             NextLevel,
             GameCompleted,
+            Paused,
         }
        
         public void LoadContent(SpriteBatch sBatch, ContentManager Content,Viewport port)
         {
             Texture2D grassTile = Content.Load<Texture2D>("GrassTile.png");
             pitBackground = Content.Load<Texture2D>("pitBackground.png");
+            gameCompleteBackground = Content.Load<Texture2D>("gameCompleted.png");
             player = Content.Load<Texture2D>("playerCar.png");
             font = Content.Load<SpriteFont>("LapTimeFont");
             this.port = port;
@@ -106,7 +110,12 @@ namespace Game1.Controller
 
         public void Update(float elapsedTime)
         {
-       
+            Console.WriteLine("LEVEL:"+levelCounter);
+            Console.WriteLine("PlayerState:" + CurrentPlayerState);
+
+            
+            
+
             //Check if player is in the pitlane || is changing level || on track.
             if (gameSimulation.isInPit() && CurrentPlayerState != PlayerState.NextLevel)
             {
@@ -116,14 +125,40 @@ namespace Game1.Controller
             {
                 CurrentPlayerState = PlayerState.NextLevel;
             }
+            else if(CurrentPlayerState == PlayerState.GameCompleted)
+            {
+                CurrentPlayerState = PlayerState.GameCompleted;
+            }
             else
             {
-                CurrentPlayerState = PlayerState.OnTrack;
+                if (paused == true)
+                {
+                    CurrentPlayerState = PlayerState.Paused;
+                }
+                else
+                {
+                    CurrentPlayerState = PlayerState.OnTrack;
+                }
+
+                
+
+                
+
             }
 
             //Check if player is ontack, inpit or is loading the next level. 
             switch (CurrentPlayerState)
             {
+                case PlayerState.Paused:
+                {
+                    if (Keyboard.GetState().IsKeyDown(Keys.Enter) && paused)
+                    {
+                        paused = false;
+                        CurrentPlayerState = PlayerState.OnTrack;
+                    }
+                    break;
+
+                }
                 case PlayerState.OnTrack:
                     MediaPlayer.Pause();
                     gameSimulation.updateLap(elapsedTime);
@@ -135,10 +170,28 @@ namespace Game1.Controller
 
                         if(gameSimulation.isWonDelayTimerFinished(elapsedTime))
                         {
-                            CurrentPlayerState = PlayerState.NextLevel;
+                            
                             levelCounter++;
+
+                            if (levelCounter >= MAX_LEVEL)
+                            {
+                                CurrentPlayerState = PlayerState.GameCompleted;
+                               
+                            }
+                            else
+                            {
+                                CurrentPlayerState = PlayerState.NextLevel;
+                            }
+
                         }
                     }
+
+                    if (Keyboard.GetState().IsKeyDown(Keys.P) && !paused)
+                    {
+                        CurrentPlayerState = PlayerState.Paused;
+                        paused = true;
+                    }
+
                     break;
                     
 
@@ -153,11 +206,7 @@ namespace Game1.Controller
 
                 case PlayerState.NextLevel:
 
-                        if(levelCounter >= MAX_LEVEL)
-                        {
-                            CurrentPlayerState = PlayerState.GameCompleted;
-                            break;
-                        }
+                        
                         MediaPlayer.Resume();
                         MediaPlayer.Volume = 0.05f;
                         e0.Volume = 0;
@@ -167,7 +216,7 @@ namespace Game1.Controller
                         carHandling = new CarHandling();
                         gameSimulation = new GameSimulation(map, carHandling, timeToBeat, sh);
                         gameView = new GameView(camera, gameSimulation, sh);
-
+                        
                         if (Keyboard.GetState().IsKeyDown(Keys.Space))
                         {
                             CurrentPlayerState = PlayerState.InPit;
@@ -176,18 +225,12 @@ namespace Game1.Controller
                     break;
 
                 case PlayerState.GameCompleted:
-
+                        levelCounter = 1;
                         if (Keyboard.GetState().IsKeyDown(Keys.Enter))
                         {
-
-                            levelCounter = 1;
                             CurrentPlayerState = PlayerState.NextLevel;
                         }
 
-                        if(Keyboard.GetState().IsKeyDown(Keys.Escape))
-                        {
-                        
-                        }
                     break;
             }
            
@@ -223,6 +266,12 @@ namespace Game1.Controller
                 break;
 
                 case PlayerState.GameCompleted:
+                gameView.drawWonBackground(sBatch, gameCompleteBackground);
+                break;
+
+                case PlayerState.Paused:
+                e0.Volume = 0;
+                gameView.paused(sBatch, font );
                 break;
             }
         }

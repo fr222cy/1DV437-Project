@@ -90,6 +90,17 @@ namespace Game1.View
             sBatch.End();
         }
 
+        public void paused(SpriteBatch sBatch, SpriteFont font)
+        {
+            float fontWidth = 30;
+            float scale = camera.getScale(1, fontWidth);
+
+            sBatch.Begin();
+            sBatch.DrawString(font, "Paused \nPress ENTER to Unpause.", camera.getViewCoords(new Vector2(15, 10)), Color.Snow, 0f, Vector2.Zero, scale, SpriteEffects.None, 0);
+
+            sBatch.End();
+        }
+
         public void drawLevel(SpriteBatch sBatch, SpriteFont font, int level)
         {
             float fontWidth = 30;
@@ -109,6 +120,14 @@ namespace Game1.View
             sBatch.Begin();
             sBatch.DrawString(font, "Congratulations! \nYou won level " + level.ToString() + " !", camera.getViewCoords(new Vector2(15, 10)), Color.Snow, 0f, Vector2.Zero, scale, SpriteEffects.None, 0);
        
+            sBatch.End();
+        }
+
+        public void drawWonBackground(SpriteBatch sBatch, Texture2D background)
+        {
+            float scale = camera.getPitWindowScale(background.Width);
+            sBatch.Begin();
+            sBatch.Draw(background, Vector2.Zero, background.Bounds, Color.White, 0f, Vector2.Zero, scale, SpriteEffects.None, 0);
             sBatch.End();
         }
 
