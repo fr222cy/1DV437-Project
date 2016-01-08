@@ -16,19 +16,20 @@ namespace Game1
         Song song;
         GameController gameController;
         MenuController menuController;
-
+     
         enum Gamestate
         {
             Menu,
             Playing,
         }
 
-        bool hasClickedPlay = false;
+        int hasClickedOnSomething = 0;
 
         Gamestate CurrentGameState = Gamestate.Menu;
 
         public Mastercontoller()
         {
+            
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             graphics.PreferredBackBufferWidth = 1280;
@@ -41,11 +42,10 @@ namespace Game1
         {
             base.Initialize();
         }
-
+       
       
         protected override void LoadContent()
         {
-
             song = Content.Load<Song>("Motorbike-rock-3");
             MediaPlayer.Play(song);
             MediaPlayer.Volume = 0.1f; 
@@ -54,10 +54,10 @@ namespace Game1
 
             menuController = new MenuController(graphics);
             gameController = new GameController();
-       
+
             //Loads Menu Content.
             menuController.LoadContent(spriteBatch, Content, GraphicsDevice.Viewport);
-
+        
             //Loads Game Content.
             gameController.LoadContent(spriteBatch, Content, GraphicsDevice.Viewport);
         }
@@ -77,19 +77,28 @@ namespace Game1
                 case Gamestate.Menu:
                     
                     //this.IsMouseVisible = true;
-                    hasClickedPlay = menuController.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
-                    gameController.LoadContent(spriteBatch, Content, GraphicsDevice.Viewport);
-                    if(hasClickedPlay)
+                    hasClickedOnSomething = menuController.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
+                    
+                    if (hasClickedOnSomething == 1)
                     {
                         CurrentGameState = Gamestate.Playing;
                     }
-                    break;
+                    else if (hasClickedOnSomething == 2)
+                    {
+                        quit();
+                    }
+                    else if (hasClickedOnSomething == 3)
+                    {
+                        menuController.LoadContent(spriteBatch, Content, GraphicsDevice.Viewport);
+                        gameController.LoadContent(spriteBatch, Content, GraphicsDevice.Viewport);
+                    }
+                    
+                    break; 
 
                 case Gamestate.Playing:
-
+                    
                     if (Keyboard.GetState().IsKeyDown(Keys.Escape))
                     {
-                        
                         CurrentGameState = Gamestate.Menu;
                     }
 
@@ -117,6 +126,11 @@ namespace Game1
             }
 
             base.Draw(gameTime);
+        }
+
+        public void quit()
+        {
+            this.Exit();
         }
     }
 }

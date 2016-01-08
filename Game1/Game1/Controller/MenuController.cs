@@ -21,6 +21,7 @@ namespace Game1.Controller
         Texture2D res_1280x960;
         Texture2D res_1600x1200;
         Texture2D fullscreen;
+        Texture2D exit;
         MenuView menuView;
         MenuCamera menuCamera;
         MouseState lastMouseState;
@@ -28,7 +29,7 @@ namespace Game1.Controller
         Texture2D cursor;
         
         bool hasClicked = false;
-        bool hasClickedPlay = false;
+        int hasClickedOnSomething = 0;
         public MenuController(GraphicsDeviceManager graphics)
         {
             this.graphics = graphics;
@@ -47,25 +48,28 @@ namespace Game1.Controller
             res_1280x960 = Content.Load<Texture2D>("1280x960.png");
             res_1600x1200 = Content.Load<Texture2D>("1600x1200.png");
             fullscreen = Content.Load<Texture2D>("Fullscreen.png");
+            exit = Content.Load<Texture2D>("exit.png");
             menuView = new MenuView(menuCamera);
         }
 
-        public bool Update(float elapsedSeconds)
+        public int Update(float elapsedSeconds)
         {
             lastMouseState = currentMouseState;
-
+            
             currentMouseState = Mouse.GetState();
             var mousePosition = new Vector2(currentMouseState.X, currentMouseState.Y);
-            hasClickedPlay = menuView.Update(mousePosition, playButton, hasClicked, graphics);
+            hasClickedOnSomething = menuView.Update(mousePosition, playButton, hasClicked, graphics);
 
             if (lastMouseState.LeftButton == ButtonState.Released && currentMouseState.LeftButton == ButtonState.Pressed)
             {
                 hasClicked = true;
-                // Returns true if the mouse click is within the Playbutton area. 
-                hasClickedPlay = menuView.Update(mousePosition, playButton, hasClicked, graphics);
+                // Returns 1 if the mouse click is within the Playbutton area. 
+                // Return 2 if has pressed exit.
+                // Return 3 if has changed Resolution.
+                hasClickedOnSomething = menuView.Update(mousePosition, playButton, hasClicked, graphics);
                 hasClicked = false;
             }
-            return hasClickedPlay;
+            return hasClickedOnSomething;
         }
 
         public void Draw(SpriteBatch sBatch, float elapsedSeconds)
@@ -77,7 +81,8 @@ namespace Game1.Controller
                 res_1280x960,
                 res_1600x1200,
                 fullscreen,
-                cursor);            
+                cursor,
+                exit);            
         }
     }
 }
