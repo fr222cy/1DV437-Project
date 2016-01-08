@@ -20,7 +20,7 @@ namespace Game1.Model
         float steeringModifier = 0.030f;
 
         const float maxSteerSlowDown = 0.999f;
-        const float minSteerSlowDown = 0.990f;
+        const float minSteerSlowDown = 0.985f;
         float steerSlowDown = 0.995f;
 
         float resources = 15f;

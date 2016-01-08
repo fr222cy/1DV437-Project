@@ -158,7 +158,11 @@ namespace Game1.Model
 
                 }
                 
-                if(tireScreamTimer > 0.35 && speed < -1.5)
+                if(tireScreamTimer > 0.30 && speed < -2)
+                {
+                    soundHandler.setTireScream();
+                }
+                if (tireScreamTimer > 0.15 && speed < -3.5)
                 {
                     soundHandler.setTireScream();
                 }
@@ -426,23 +430,23 @@ namespace Game1.Model
             if (Keyboard.GetState().IsKeyDown(Keys.W))
             {
                 handling.setAcceleration(0.002f);
-                handling.setSteerslowDown(-0.000001f);
+                handling.setSteerslowDown(-0.000012f);
             }
             if (Keyboard.GetState().IsKeyDown(Keys.Q))
             {
                 handling.setAcceleration(-0.002f);
-                handling.setSteerslowDown(0.000001f);
+                handling.setSteerslowDown(0.000012f);
             }
             //Engine Limiter
             if (Keyboard.GetState().IsKeyDown(Keys.S))
             {
                 handling.setMaxSpeed(0.001f);
-                handling.setSteerslowDown(-0.000001f);
+                handling.setSteerslowDown(-0.000008f);
             }
             if (Keyboard.GetState().IsKeyDown(Keys.A))
             {    
                 handling.setMaxSpeed(-0.001f);
-                handling.setSteerslowDown(0.000001f);
+                handling.setSteerslowDown(0.000008f);
             }    
             //Turn Radius
             if (Keyboard.GetState().IsKeyDown(Keys.Z))
