@@ -22,6 +22,7 @@ namespace Game1.Controller
         Texture2D res_1600x1200;
         Texture2D fullscreen;
         Texture2D exit;
+        Texture2D restart;
         MenuView menuView;
         MenuCamera menuCamera;
         MouseState lastMouseState;
@@ -49,6 +50,7 @@ namespace Game1.Controller
             res_1600x1200 = Content.Load<Texture2D>("1600x1200.png");
             fullscreen = Content.Load<Texture2D>("Fullscreen.png");
             exit = Content.Load<Texture2D>("exit.png");
+            restart = Content.Load<Texture2D>("RestartButton.png");
             menuView = new MenuView(menuCamera);
         }
 
@@ -82,7 +84,8 @@ namespace Game1.Controller
                 res_1600x1200,
                 fullscreen,
                 cursor,
-                exit);            
+                exit,
+                restart);            
         }
     }
 }

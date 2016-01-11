@@ -15,7 +15,7 @@
     <MonoGameContentBuilderExe>
     </MonoGameContentBuilderExe>
     <IsWebBootstrapper>false</IsWebBootstrapper>
-    <PublishUrl>C:\Users\Filip\Desktop\Projekt\Spelprogrammering\Game-Project\</PublishUrl>
+    <PublishUrl>C:\Users\Filip\Desktop\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
     <UpdateEnabled>false</UpdateEnabled>
@@ -196,6 +196,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\Regular.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\RestartButton.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\smoke.png">

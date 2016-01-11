@@ -47,8 +47,11 @@ namespace Game1
         protected override void LoadContent()
         {
             song = Content.Load<Song>("Motorbike-rock-3");
-            MediaPlayer.Play(song);
+            MediaPlayer.IsRepeating = true;
             MediaPlayer.Volume = 0.1f; 
+            MediaPlayer.Play(song);
+            
+            
             
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
@@ -89,8 +92,8 @@ namespace Game1
                     }
                     else if (hasClickedOnSomething == 3)
                     {
-                        menuController.LoadContent(spriteBatch, Content, GraphicsDevice.Viewport);
                         gameController.LoadContent(spriteBatch, Content, GraphicsDevice.Viewport);
+                        CurrentGameState = Gamestate.Playing;
                     }
                     
                     break; 

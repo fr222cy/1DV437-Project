@@ -20,6 +20,7 @@ namespace Game1.View
         //Vector2 pos_1600;
         Vector2 pos_fullscreen;
         Vector2 pos_exit;
+        Vector2 pos_restart;
         Texture2D playButton;
         float buttonScale = 1f;
         float minButtonscale = 1f;
@@ -38,8 +39,9 @@ namespace Game1.View
             //pos_1024 = new Vector2(0.3f, 0.4f);
             //pos_1280 = new Vector2(0.3f, 0.45f);
             //pos_1600 = new Vector2(0.3f, 0.5f);
-            pos_fullscreen = new Vector2(0.3f, 0.4f);
+            pos_fullscreen = new Vector2(0.3f, 0.45f);
             pos_exit = new Vector2(0.3f, 0.35f);
+            pos_restart = new Vector2(0.3f, 0.4f);
             
         }
 
@@ -133,6 +135,14 @@ namespace Game1.View
                     return 2;     
                 }
             }
+            if (pos_restart.X >= mouseModelPosition.X - buttonModelWidth && pos_restart.X <= mouseModelPosition.X + buttonModelWidth
+            && pos_restart.Y >= mouseModelPosition.Y - buttonModelHeight && pos_restart.Y <= mouseModelPosition.Y + buttonModelHeight)
+            {
+                if (hasClicked)
+                {
+                    return 3;
+                }
+            }
             //Fullscreen Toggle
             if (pos_fullscreen.X >= mouseModelPosition.X - buttonModelWidth && pos_fullscreen.X <= mouseModelPosition.X + buttonModelWidth
             && pos_fullscreen.Y >= mouseModelPosition.Y - buttonModelHeight && pos_fullscreen.Y <= mouseModelPosition.Y + buttonModelHeight)
@@ -164,7 +174,8 @@ namespace Game1.View
             Texture2D res_1600,
             Texture2D fullscreen,
             Texture2D cursor,
-            Texture2D exit)
+            Texture2D exit,
+            Texture2D restart)
         {
             float scale = camera.getScale((float)menuBackground.Width);
 
@@ -178,6 +189,7 @@ namespace Game1.View
             sBatch.Draw(fullscreen, camera.getViewCoords(pos_fullscreen, playButton.Width, playButton.Height), playButton.Bounds, Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0);
             sBatch.Draw(cursor, mousePosition, cursor.Bounds, Color.White, 0f, Vector2.Zero, scale, SpriteEffects.None, 0);
             sBatch.Draw(exit, camera.getViewCoords(pos_exit, playButton.Width, playButton.Height), playButton.Bounds, Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0);
+            sBatch.Draw(restart, camera.getViewCoords(pos_restart, playButton.Width, playButton.Height), playButton.Bounds, Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0);
             sBatch.End();
         }
         
